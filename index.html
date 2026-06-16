@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Immersive Circle of Fifths</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #111111;
+            color: #eeeeee;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 { 
+            margin-bottom: 5px; 
+            font-weight: 300; 
+            letter-spacing: 3px;
+            color: #ffffff;
+        }
+        
+        .controls {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        select {
+            padding: 10px 15px;
+            font-size: 16px;
+            background-color: #222;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        select:focus { border-color: #4df3a9; }
+
+        svg { margin: 10px 0; }
+        
+        path.outer-note-sector {
+            stroke: #111111;
+            stroke-width: 2px;
+            cursor: pointer;
+            transition: fill 0.4s, filter 0.2s, opacity 0.4s;
+        }
+        path.outer-note-sector:hover {
+            filter: brightness(1.2);
+        }
+
+        path.inner-quality-sector {
+            stroke: #111111;
+            stroke-width: 2px;
+            transition: fill 0.4s, filter 0.2s, opacity 0.4s;
+            pointer-events: none;
+        }
+        
+        text.note-label {
+            font-weight: bold;
+            font-size: 18px;
+            fill: #ffffff;
+            pointer-events: none;
+            transition: opacity 0.4s, fill 0.4s;
+        }
+        text.quality-label {
+            font-size: 10px;
+            font-weight: bold;
+            fill: #ffffff;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        text.quality-label.show {
+            opacity: 0.9;
+        }
+
+        .dimmed-text {
+            fill: #444444 !important;
+        }
+
+        #info {
+            font-size: 18px;
+            color: #888888;
+            text-align: center;
+            min-height: 55px;
+            line-height: 1.5;
+            max-width: 600px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #666;
+            margin: 15px 0 5px 0;
+        }
+
+        .container-block {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 700px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            background-color: #1a1a1a;
+            color: #ccc;
+            border: 2px solid #333;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        button:hover {
+            background-color: #333;
+            border-color: #fff;
+            color: #fff;
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        button.active-mode-btn {
+            background-color: #222;
+            border-color: #4df3a9;
+            color: #4df3a9;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Immersive Circle of Fifths</h1>
+    
+    <div class="controls">
+        <select id="scale-select">
+            <option value="major">1. Major Scale</option>
+            <option value="melodic-minor">2. Melodic Minor</option>
+            <option value="harmonic-minor">3. Harmonic Minor</option>
+            <option value="harmonic-major">4. Harmonic Major</option>
+        </select>
+    </div>
+    
+    <svg width="440" height="440" viewBox="-220 -220 440 440" id="circle"></svg>
+
+    <div id="info">Select a Parent Scale, then click a note on the wheel to begin.</div>
+
+    <div class="section-title" id="modes-title" style="display:none;">Modes (Rotations)</div>
+    <div class="container-block" id="modes-area"></div>
+
+    <div class="section-title" id="chords-title" style="display:none;">Diatonic Chords</div>
+    <div class="container-block" id="chord-area"></div>
+
+    <script>
+        const chromatic = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+        const circleOfFifths = ["C", "G", "D", "A", "E", "B", "F#/Gb", "C#/Db", "G#/Ab", "D#/Eb", "A#/Bb", "F"];
+
+        const displayToInternal = {
+            "C": "C", "G": "G", "D": "D", "A": "A", "E": "E", "B": "B", "F": "F",
+            "F#/Gb": "Gb", "C#/Db": "Db", "G#/Ab": "Ab", "D#/Eb": "Eb", "A#/Bb": "Bb"
+        };
+        const internalToDisplay = {
+            "C": "C", "Db": "C#/Db", "D": "D", "Eb": "D#/Eb", "E": "E", "F": "F",
+            "Gb": "F#/Gb", "G": "G", "Ab": "G#/Ab", "A": "A", "Bb": "A#/Bb", "B": "B"
+        };
+
+        const scaleIntervals = {
+            "major": [2, 2, 1, 2, 2, 2, 1],
+            "melodic-minor": [2, 1, 2, 2, 2, 2, 1],
+            "harmonic-minor": [2, 1, 2, 2, 1, 3, 1],
+            "harmonic-major": [2, 2, 1, 2, 1, 3, 1]
+        };
+
+        const modeNames = {
+            "major": ["Ionian", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian"],
+            "melodic-minor": ["Melodic Minor", "Dorian ♭2", "Lydian Augmented", "Lydian Dominant", "Mixolydian ♭6", "Locrian ♮2", "Altered / Super Locrian"],
+            "harmonic-minor": ["Harmonic Minor", "Locrian ♮6", "Ionian ♯5", "Dorian ♯4", "Phrygian Dominant", "Lydian ♯2", "Ultralocrian / Altered 𝄫7"],
+            // ★ 修正箇所
+            "harmonic-major": ["Harmonic Major", "Dorian ♭5", "Ionian Augmented", "Lydian ♭3", "Mixolydian ♭2", "Lydian Augmented ♯2", "Locrian 𝄫7"]
+        };
+
+        let audioCtx = null;
+        const noteFreqs = {
+            "C": 261.63, "Db": 277.18, "D": 293.66, "Eb": 311.13, "E": 329.63, "F": 349.23,
+            "Gb": 369.99, "G": 392.00, "Ab": 415.30, "A": 440.00, "Bb": 466.16, "B": 493.88
+        };
+
+        let currentSelectedRoot = null;
+
+        function playNotes(chordNotes) {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const now = audioCtx.currentTime;
+            const rootFreq = noteFreqs[chordNotes[0]];
+
+            const masterGain = audioCtx.createGain();
+            masterGain.gain.setValueAtTime(0.3, now);
+            masterGain.connect(audioCtx.destination);
+
+            chordNotes.forEach((noteName, index) => {
+                let freq = noteFreqs[noteName];
+                if (index === 0) freq /= 2; 
+                if (index > 0 && freq < rootFreq) freq *= 2;
+                if (index === 3) freq *= 2; 
+
+                const detunes = [-6, 6];
+                detunes.forEach(detuneVal => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    
+                    osc.type = 'sawtooth'; 
+                    osc.frequency.setValueAtTime(freq, now);
+                    osc.detune.setValueAtTime(detuneVal, now);
+
+                    const filter = audioCtx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(1200, now);
+                    filter.Q.setValueAtTime(1, now);
+
+                    gain.gain.setValueAtTime(0, now);
+                    gain.gain.linearRampToValueAtTime(0.12, now + 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 2.0);
+                    
+                    osc.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(masterGain);
+                    
+                    osc.start(now);
+                    osc.stop(now + 2.0);
+                });
+            });
+        }
+
+        function playSingleNote(noteName, index, isLast, referenceRoot) {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const playTime = audioCtx.currentTime;
+            let freq = noteFreqs[noteName];
+
+            if (index > 0 && freq < noteFreqs[referenceRoot]) freq *= 2;
+            if (isLast) freq = noteFreqs[referenceRoot] * 2; 
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            const filter = audioCtx.createBiquadFilter();
+
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(freq, playTime);
+            
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(1400, playTime);
+
+            const duration = isLast ? 1.5 : 0.8;
+            const volume = isLast ? 0.1 : 0.08;
+
+            gain.gain.setValueAtTime(0, playTime);
+            gain.gain.linearRampToValueAtTime(volume, playTime + 0.04);
+            gain.gain.exponentialRampToValueAtTime(0.001, playTime + duration);
+
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start(playTime);
+            osc.stop(playTime + duration);
+        }
+
+        function getChordQuality(root, third, fifth, seventh) {
+            const rIdx = chromatic.indexOf(root);
+            const t3 = (chromatic.indexOf(third) - rIdx + 12) % 12;
+            const t5 = (chromatic.indexOf(fifth) - rIdx + 12) % 12;
+            const t7 = (chromatic.indexOf(seventh) - rIdx + 12) % 12;
+
+            if (t3 === 4 && t5 === 7 && t7 === 11) return "M7";
+            if (t3 === 4 && t5 === 7 && t7 === 10) return "7";
+            if (t3 === 3 && t5 === 7 && t7 === 10) return "m7";
+            if (t3 === 3 && t5 === 6 && t7 === 10) return "m7♭5";
+            if (t3 === 3 && t5 === 6 && t7 === 9)  return "dim7";
+            
+            if (t3 === 4 && t5 === 8 && t7 === 11) return "augM7";
+            if (t3 === 4 && t5 === 8 && t7 === 10) return "7#5";
+            
+            if (t3 === 3 && t5 === 7 && t7 === 11) return "m(M7)";
+            
+            if (t3 === 4 && t5 === 6 && t7 === 10) return "7♭5";
+            if (t3 === 4 && t5 === 6 && t7 === 11) return "M7♭5";
+            if (t3 === 3 && t5 === 6 && t7 === 11) return "m(M7)♭5";
+
+            if (t5 === 8) return "augM7"; 
+            if (t5 === 6) return "m7♭5";   
+            
+            return "m7"; 
+        }
+
+        function getChordColor(quality) {
+            if (quality.includes("#5") || quality.includes("aug")) return "#e08020"; 
+            if (quality === "M7")       return "#b82c36";      
+            if (quality === "7")        return "#cca028";      
+            if (quality === "7♭5")      return "#cca028";      
+            if (quality === "M7♭5")     return "#b82c36";      
+            if (quality === "m7")       return "#24508a";      
+            if (quality.includes("(M7)")) return "#5e305e";    
+            if (quality.includes("♭5")) return "#285a38";      
+            if (quality.includes("dim7")) return "#4a1820";    
+            return "#444444";
+        }
+
+        const svg = document.getElementById('circle');
+        const scaleSelect = document.getElementById('scale-select');
+        const info = document.getElementById('info');
+        const modesArea = document.getElementById('modes-area');
+        const chordArea = document.getElementById('chord-area');
+
+        circleOfFifths.forEach((displayNote, i) => {
+            const internalNote = displayToInternal[displayNote];
+
+            const angleStart = (i * 30 - 15) - 90;
+            const angleEnd = (i * 30 + 15) - 90;
+            const radStart = (angleStart * Math.PI) / 180;
+            const radEnd = (angleEnd * Math.PI) / 180;
+
+            const hue = (150 + i * 30) % 360;
+            
+            const x1_out = 200 * Math.cos(radStart); const y1_out = 200 * Math.sin(radStart);
+            const x2_out = 200 * Math.cos(radEnd);   const y2_out = 200 * Math.sin(radEnd);
+            const x1_mid = 140 * Math.cos(radEnd);   const y1_mid = 140 * Math.sin(radEnd);
+            const x2_mid = 140 * Math.cos(radStart); const y2_mid = 140 * Math.sin(radStart);
+            const dOuter = `M ${x1_out} ${y1_out} A 200 200 0 0 1 ${x2_out} ${y2_out} L ${x1_mid} ${y1_mid} A 140 140 0 0 0 ${x2_mid} ${y2_mid} Z`;
+
+            const defaultOuterFill = `hsl(${hue}, 35%, 28%)`; 
+            const activeOuterFill = `hsl(${hue}, 80%, 50%)`;  
+            const dimmedOuterFill = `#1c1c1c`;                 
+
+            const pathOuter = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            pathOuter.setAttribute("d", dOuter);
+            pathOuter.setAttribute("id", `path-${internalNote}`);
+            pathOuter.setAttribute("class", "outer-note-sector");
+            pathOuter.setAttribute("fill", defaultOuterFill);
+            pathOuter.dataset.defaultFill = defaultOuterFill;
+            pathOuter.dataset.activeFill = activeOuterFill;
+            pathOuter.dataset.dimmedFill = dimmedOuterFill;
+            svg.appendChild(pathOuter);
+
+            const x1_mid_in = 135 * Math.cos(radStart); const y1_mid_in = 135 * Math.sin(radStart);
+            const x2_mid_in = 135 * Math.cos(radEnd);   const y2_mid_in = 135 * Math.sin(radEnd);
+            const x1_in     = 90 * Math.cos(radEnd);    const y1_in     = 90 * Math.sin(radEnd);
+            const x2_in     = 90 * Math.cos(radStart);  const y2_in     = 90 * Math.sin(radStart);
+            const dInner = `M ${x1_mid_in} ${y1_mid_in} A 135 135 0 0 1 ${x2_mid_in} ${y2_mid_in} L ${x1_in} ${y1_in} A 90 90 0 0 0 ${x2_in} ${y2_in} Z`;
+
+            const pathInner = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            pathInner.setAttribute("d", dInner);
+            pathInner.setAttribute("id", `quality-path-${internalNote}`);
+            pathInner.setAttribute("class", "inner-quality-sector");
+            pathInner.setAttribute("fill", "#1a1a1a"); 
+            svg.appendChild(pathInner);
+
+            const textAngle = (i * 30) - 90;
+            const textRad = (textAngle * Math.PI) / 180;
+            const tX = 170 * Math.cos(textRad); const tY = 170 * Math.sin(textRad);
+            
+            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            text.setAttribute("x", tX); text.setAttribute("y", tY);
+            text.setAttribute("text-anchor", "middle"); text.setAttribute("dominant-baseline", "central");
+            text.setAttribute("class", "note-label");
+            text.setAttribute("id", `text-${internalNote}`);
+            text.style.fontSize = displayNote.includes('/') ? "12px" : "18px";
+            text.textContent = displayNote;
+            svg.appendChild(text);
+
+            const qX = 112 * Math.cos(textRad); const qY = 112 * Math.sin(textRad);
+            const qText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            qText.setAttribute("x", qX); qText.setAttribute("y", qY);
+            qText.setAttribute("text-anchor", "middle"); qText.setAttribute("dominant-baseline", "central");
+            qText.setAttribute("class", "quality-label");
+            qText.setAttribute("id", `quality-${internalNote}`);
+            svg.appendChild(qText);
+
+            pathOuter.addEventListener('click', () => {
+                currentSelectedRoot = internalNote;
+                renderModalUniverse(0); 
+            });
+        });
+
+        function renderModalUniverse(modeRotationIndex) {
+            const currentParentScale = scaleSelect.value;
+            const intervals = scaleIntervals[currentParentScale];
+            
+            info.style.color = "#4df3a9";
+            document.getElementById('modes-title').style.display = 'block';
+            document.getElementById('chords-title').style.display = 'block';
+
+            let currentChromaticIdx = chromatic.indexOf(currentSelectedRoot);
+            const parentScaleNotes = [chromatic[currentChromaticIdx]];
+            for(let j = 0; j < 6; j++) {
+                currentChromaticIdx = (currentChromaticIdx + intervals[j]) % 12;
+                parentScaleNotes.push(chromatic[currentChromaticIdx]);
+            }
+
+            const modalScaleNotes = [];
+            for (let i = 0; i < 7; i++) {
+                modalScaleNotes.push(parentScaleNotes[(i + modeRotationIndex) % 7]);
+            }
+            const modalRoot = modalScaleNotes[0];
+
+            circleOfFifths.forEach(dn => {
+                const inote = displayToInternal[dn];
+                const pOuter = document.getElementById(`path-${inote}`);
+                const pInner = document.getElementById(`quality-path-${inote}`);
+                const t = document.getElementById(`text-${inote}`);
+                
+                if(pOuter) { pOuter.style.fill = pOuter.dataset.dimmedFill; pOuter.style.filter = "none"; }
+                if(pInner) { pInner.style.filter = "none"; pInner.style.fill = "#151515"; }
+                if(t) t.classList.add('dimmed-text');
+            });
+
+            document.querySelectorAll('.quality-label').forEach(q => {
+                q.classList.remove('show'); q.textContent = "";
+            });
+
+            const diatonicChords = [];
+            
+            for(let deg = 0; deg < 7; deg++) {
+                const r = modalScaleNotes[deg];
+                const t = modalScaleNotes[(deg + 2) % 7];
+                const f = modalScaleNotes[(deg + 4) % 7];
+                const s = modalScaleNotes[(deg + 6) % 7];
+                
+                const quality = getChordQuality(r, t, f, s);
+                const displayRoot = internalToDisplay[r];
+                diatonicChords.push({ root: r, notes: [r, t, f, s], label: displayRoot + quality, quality: quality });
+
+                const qElement = document.getElementById(`quality-${r}`);
+                if (qElement) {
+                    qElement.textContent = quality; 
+                    qElement.classList.add('show');
+                }
+
+                const targetOuterPath = document.getElementById(`path-${r}`);
+                const targetInnerPath = document.getElementById(`quality-path-${r}`);
+                const targetText = document.getElementById(`text-${r}`);
+                
+                if(targetOuterPath) {
+                    targetOuterPath.style.fill = targetOuterPath.dataset.activeFill;
+                    if(deg === 0) targetOuterPath.style.filter = "drop-shadow(0px 0px 5px #fff)"; 
+                }
+                
+                if(targetInnerPath) {
+                    targetInnerPath.style.fill = getChordColor(quality);
+                    if(deg === 0) targetInnerPath.style.filter = "drop-shadow(0px 0px 5px " + getChordColor(quality) + ")";
+                }
+                
+                if(targetText) targetText.classList.remove('dimmed-text');
+            }
+
+            const arpeggioNotes = [...modalScaleNotes, modalScaleNotes[0]];
+            arpeggioNotes.forEach((noteName, index) => {
+                setTimeout(() => {
+                    playSingleNote(noteName, index, index === 7, arpeggioNotes[0]);
+                }, index * 180);
+            });
+
+            const activeModeName = modeNames[currentParentScale][modeRotationIndex];
+            const displayModalRoot = internalToDisplay[modalRoot];
+            const textScaleSequence = modalScaleNotes.map(n => internalToDisplay[n]).join(' - ');
+            info.innerHTML = `【Current Mode: ${displayModalRoot} ${activeModeName}】<br>Notes: ${textScaleSequence}`;
+
+            modesArea.innerHTML = "";
+            const currentScaleModesList = modeNames[currentParentScale];
+            currentScaleModesList.forEach((mName, idx) => {
+                const modeBtn = document.createElement('button');
+                const modeRootName = internalToDisplay[parentScaleNotes[idx]];
+                modeBtn.textContent = `${modeRootName} ${mName}`;
+                if(idx === modeRotationIndex) modeBtn.className = 'active-mode-btn';
+                
+                modeBtn.addEventListener('click', () => {
+                    renderModalUniverse(idx); 
+                });
+                modesArea.appendChild(modeBtn);
+            });
+
+            chordArea.innerHTML = "";
+            const numerals = ["I", "II", "III", "IV", "V", "VI", "VII"];
+            diatonicChords.forEach((chord, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'chord-btn';
+                btn.innerHTML = `<span style="color:#4df3a9; font-size:11px;">${numerals[idx]}</span><br>${chord.label}`;
+                btn.style.borderColor = getChordColor(chord.quality); 
+                
+                btn.addEventListener('click', () => {
+                    playNotes(chord.notes);
+                });
+                chordArea.appendChild(btn);
+            });
+        }
+
+        scaleSelect.addEventListener('change', () => {
+            document.querySelectorAll('path.outer-note-sector').forEach(p => p.style.fill = p.dataset.defaultFill);
+            document.querySelectorAll('path.inner-quality-sector').forEach(p => p.style.fill = "#1a1a1a");
+            document.querySelectorAll('text.note-label').forEach(t => t.classList.remove('dimmed-text'));
+            document.querySelectorAll('.quality-label').forEach(q => { q.classList.remove('show'); q.textContent = ""; });
+            modesArea.innerHTML = ""; chordArea.innerHTML = "";
+            document.getElementById('modes-title').style.display = 'none';
+            document.getElementById('chords-title').style.display = 'none';
+            info.style.color = "#888888";
+            info.textContent = "Select a Parent Scale, then click a note on the wheel to begin.";
+            currentSelectedRoot = null;
+        });
+    </script>
+</body>
+</html>
