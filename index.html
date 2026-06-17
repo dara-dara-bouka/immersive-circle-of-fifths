@@ -13,165 +13,166 @@
     <meta name="twitter:card" content="summary_large_image">
 
     <style>
-        /* サイバーパンク・テーマ：ベーススタイリング */
+        /* モダンミニマル・テーマ：洗練されたグラスモフィズムデザイン */
         body {
-            font-family: 'Consolas', 'JetBrains Mono', 'Segoe UI', monospace;
-            background-color: #05070a;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0d1117;
             background-image: 
-                radial-gradient(at 50% 10%, #0d1527 0px, transparent 50%),
-                radial-gradient(at 0% 100%, #030812 0px, transparent 50%),
-                linear-gradient(rgba(18, 24, 38, 0.2) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(18, 24, 38, 0.2) 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 20px 20px, 20px 20px;
-            color: #c4d1ec;
+                radial-gradient(circle at 50% -20%, #1e2640 0%, transparent 60%),
+                radial-gradient(circle at 10% 90%, #0f1424 0%, transparent 50%);
+            color: #f0f3f8;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
             margin: 0;
-            padding: 20px;
+            padding: 30px 20px;
             box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
         }
 
         h1 { 
-            margin: 0 0 5px 0; 
-            font-weight: 300; 
-            letter-spacing: 5px;
+            margin: 0 0 8px 0; 
+            font-weight: 200; 
+            letter-spacing: 4px;
             color: #ffffff;
-            text-shadow: 0 0 15px rgba(0, 255, 170, 0.4);
-            font-size: 24px;
-            text-transform: uppercase;
+            font-size: 26px;
+            text-align: center;
+            opacity: 0.95;
         }
         
-        /* コントロールパネル（グラスモフィズム） */
+        /* コントロールパネル（洗練された半透明ガラス） */
         .controls {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             display: flex;
             gap: 12px;
             align-items: center;
-            background: rgba(10, 15, 30, 0.7);
-            padding: 10px 16px;
-            border-radius: 8px;
-            border: 1px solid rgba(0, 255, 170, 0.15);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            backdrop-filter: blur(4px);
+            background: rgba(255, 255, 255, 0.04);
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
 
         select {
-            padding: 8px 16px;
+            padding: 6px 16px;
             font-size: 14px;
             font-family: inherit;
-            background-color: #0d1324;
-            color: #00ffaa;
-            border: 1px solid #1a294d;
-            border-radius: 4px;
+            font-weight: 400;
+            background-color: rgba(15, 20, 35, 0.6);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
             cursor: pointer;
             outline: none;
-            transition: all 0.2s ease;
-            box-shadow: inset 0 0 5px rgba(0, 255, 170, 0.1);
+            transition: all 0.25s ease;
+            appearance: none;
+            -webkit-appearance: none;
+            padding-right: 28px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23ffffff' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: calc(100% - 12px) center;
         }
         select:focus, select:hover { 
-            border-color: #00ffaa; 
-            box-shadow: 0 0 10px rgba(0, 255, 170, 0.3);
+            border-color: rgba(255, 255, 255, 0.3);
+            background-color: rgba(15, 20, 35, 0.8);
         }
 
-        /* 異名同音切り替えボタン（ネオンオレンジ） */
+        /* 異名同音切り替えボタン（ミニマルモダン） */
         button.toggle-enharmonic {
-            padding: 8px 14px;
-            font-size: 13px;
+            padding: 6px 14px;
+            font-size: 12px;
             font-family: inherit;
-            background-color: #1a120b;
-            color: #ff9900;
-            border: 1px solid #593600;
-            border-radius: 4px;
+            font-weight: 500;
+            background-color: rgba(255, 255, 255, 0.07);
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            transition: all 0.25s ease;
+            letter-spacing: 0.5px;
         }
         button.toggle-enharmonic:hover {
-            border-color: #ff9900;
+            border-color: rgba(255, 255, 255, 0.4);
             color: #ffffff;
-            background-color: #ff9900;
-            box-shadow: 0 0 12px rgba(ff, 153, 0, 0.4);
+            background-color: rgba(255, 255, 255, 0.15);
         }
 
         /* 五度圏ホイール */
         svg { 
             margin: 10px 0;
-            filter: drop-shadow(0 0 20px rgba(0,0,0,0.6));
+            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.4));
         }
         
         path.outer-note-sector {
-            stroke: #05070a;
-            stroke-width: 2.5px;
+            stroke: #0d1117;
+            stroke-width: 2px;
             cursor: pointer;
-            transition: fill 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), filter 0.2s;
+            transition: fill 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s;
         }
         path.outer-note-sector:hover {
-            filter: brightness(1.3) saturate(1.2);
+            filter: brightness(1.15);
         }
 
         path.inner-quality-sector {
-            stroke: #05070a;
-            stroke-width: 2.5px;
-            transition: fill 0.3s ease, filter 0.3s ease;
+            stroke: #0d1117;
+            stroke-width: 2px;
+            transition: fill 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s;
             pointer-events: none;
         }
         
         text.note-label {
-            font-weight: bold;
-            font-size: 16px;
+            font-weight: 500;
+            font-size: 15px;
             fill: #ffffff;
             pointer-events: none;
-            transition: opacity 0.3s, fill 0.3s;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+            transition: opacity 0.4s, fill 0.4s;
+            letter-spacing: -0.5px;
         }
         text.quality-label {
-            font-size: 10px;
-            font-weight: bold;
-            fill: #ffffff;
+            font-size: 9px;
+            font-weight: 600;
+            fill: rgba(255, 255, 255, 0.8);
             pointer-events: none;
             opacity: 0;
-            transition: opacity 0.3s;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+            transition: opacity 0.4s;
         }
         text.quality-label.show {
-            opacity: 0.85;
+            opacity: 0.8;
         }
 
         .dimmed-text {
-            fill: #22314d !important;
-            text-shadow: none !important;
+            fill: rgba(255, 255, 255, 0.12) !important;
         }
 
-        /* 情報表示ディスプレイ */
+        /* 情報表示ディスプレイ（極上ミニマル） */
         #info {
-            font-size: 16px;
-            color: #7187b3;
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.6);
             text-align: center;
             min-height: 55px;
             line-height: 1.6;
             width: 100%;
-            max-width: 580px;
-            background: rgba(8, 12, 24, 0.6);
-            padding: 12px 20px;
-            border-radius: 6px;
-            border: 1px solid #14203d;
+            max-width: 560px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
             box-sizing: border-box;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.2px;
         }
 
         /* セクションタイトル */
         .section-title {
             font-size: 11px;
             text-transform: uppercase;
-            letter-spacing: 3px;
-            color: #495e85;
-            margin: 22px 0 8px 0;
-            font-weight: bold;
-            position: relative;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.35);
+            margin: 26px 0 10px 0;
+            font-weight: 600;
         }
 
         .container-block {
@@ -179,60 +180,59 @@
             gap: 8px;
             flex-wrap: wrap;
             justify-content: center;
-            max-width: 680px;
+            max-width: 660px;
             margin-bottom: 5px;
         }
 
-        /* サイバーボタングランドデザイン */
+        /* ミニマルボタングランドデザイン */
         button {
-            padding: 10px 14px;
-            font-size: 12px;
+            padding: 9px 15px;
+            font-size: 13px;
             font-family: inherit;
-            font-weight: bold;
-            background-color: #0b101d;
-            color: #8fa0c2;
-            border: 1px solid #1a294d;
-            border-radius: 4px;
+            font-weight: 400;
+            background-color: rgba(255, 255, 255, 0.03);
+            color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             text-align: center;
-            box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.5);
         }
         button:hover {
-            background-color: #121b30;
-            border-color: #3b568c;
+            background-color: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
             color: #ffffff;
-            box-shadow: 0 0 8px rgba(59, 86, 140, 0.3);
         }
         button:active {
-            transform: scale(0.97);
+            transform: scale(0.98);
         }
 
-        /* モード選択（アクティブ時：サイバーグリーン） */
+        /* モード選択（アクティブ時：極上ホワイト・ガラス） */
         button.active-mode-btn {
-            background-color: #051a14;
-            border-color: #00ffaa;
-            color: #00ffaa;
-            box-shadow: 0 0 10px rgba(0, 255, 170, 0.25), inset 0 0 5px rgba(0, 255, 170, 0.2);
-            text-shadow: 0 0 5px rgba(0, 255, 170, 0.5);
+            background-color: rgba(255, 255, 255, 0.95);
+            border-color: #ffffff;
+            color: #0d1117;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15);
         }
         button.active-mode-btn:hover {
-            background-color: #00ffaa;
-            color: #05070a;
-            box-shadow: 0 0 15px rgba(0, 255, 170, 0.5);
+            background-color: #ffffff;
+            color: #0d1117;
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.25);
         }
 
         /* コードボタン専用スタイル */
         button.chord-btn {
             min-width: 75px;
             line-height: 1.4;
-            background-color: #080d1a;
+            background-color: rgba(255, 255, 255, 0.02);
             border-width: 1px;
             border-style: solid;
         }
         button.chord-btn:hover {
-            filter: brightness(1.3);
-            box-shadow: 0 0 10px var(--chord-glow, rgba(255,255,255,0.2));
+            background-color: rgba(255, 255, 255, 0.05);
+            border-color: var(--chord-glow, rgba(255,255,255,0.4)) !important;
+            box-shadow: 0 0 12px var(--chord-glow, rgba(255,255,255,0.1));
         }
     </style>
 </head>
@@ -250,14 +250,14 @@
         <button id="enharmonic-toggle" class="toggle-enharmonic" style="display:none;">⇄ Switch ♯ / ♭</button>
     </div>
     
-    <svg width="410" height="410" viewBox="-220 -220 440 440" id="circle"></svg>
+    <svg width="400" height="400" viewBox="-220 -220 440 440" id="circle"></svg>
 
     <div id="info">Select a Parent Scale, then click a note on the wheel to begin.</div>
 
-    <div class="section-title" id="modes-title" style="display:none;">// Modes (Rotations)</div>
+    <div class="section-title" id="modes-title" style="display:none;">Modes</div>
     <div class="container-block" id="modes-area"></div>
 
-    <div class="section-title" id="chords-title" style="display:none;">// Diatonic Chords</div>
+    <div class="section-title" id="chords-title" style="display:none;">Diatonic Chords</div>
     <div class="container-block" id="chord-area"></div>
 
     <script>
@@ -300,18 +300,16 @@
             "F#": 369.99, "C#": 277.18, "G#": 415.30, "D#": 311.13, "A#": 466.16
         };
 
-        let currentSelectedRoot = null; // 現在の内部ルート音 (例: "Eb" または "D#")
+        let currentSelectedRoot = null; 
         let currentRotationIndex = 0;
 
         const baseNotePositions = { "C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11 };
         const alphabetList = ["C", "D", "E", "F", "G", "A", "B"];
 
-        // ルート音文字列から、その「開始アルファベット」を厳密に抽出する
         function getRootLetter(rootNote) {
             return rootNote.charAt(0);
         }
 
-        // ★完全自動・重複なし音楽理論ラベル生成ロジック
         function calculatePerfectScaleLabels(notesArray, rootNote) {
             let startLetter = getRootLetter(rootNote);
             let currentLetterIdx = alphabetList.indexOf(startLetter);
@@ -348,7 +346,7 @@
             const rootFreq = noteFreqs[cleanNotes[0]];
 
             const masterGain = audioCtx.createGain();
-            masterGain.gain.setValueAtTime(0.3, now);
+            masterGain.gain.setValueAtTime(0.25, now);
             masterGain.connect(audioCtx.destination);
 
             cleanNotes.forEach((noteName, index) => {
@@ -357,7 +355,7 @@
                 if (index > 0 && freq < rootFreq) freq *= 2;
                 if (index === 3) freq *= 2; 
 
-                const detunes = [-6, 6];
+                const detunes = [-5, 5];
                 detunes.forEach(detuneVal => {
                     const osc = audioCtx.createOscillator();
                     const gain = audioCtx.createGain();
@@ -368,19 +366,19 @@
 
                     const filter = audioCtx.createBiquadFilter();
                     filter.type = 'lowpass';
-                    filter.frequency.setValueAtTime(1200, now);
+                    filter.frequency.setValueAtTime(1300, now);
                     filter.Q.setValueAtTime(1, now);
 
                     gain.gain.setValueAtTime(0, now);
-                    gain.gain.linearRampToValueAtTime(0.12, now + 0.08);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 2.0);
+                    gain.gain.linearRampToValueAtTime(0.1, now + 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
                     
                     osc.connect(filter);
                     filter.connect(gain);
                     gain.connect(masterGain);
                     
                     osc.start(now);
-                    osc.stop(now + 2.0);
+                    osc.stop(now + 1.8);
                 });
             });
         }
@@ -399,16 +397,16 @@
 
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
-            const filter = audioCtx.createBiquadFilter();
+            const filter = document.createElement('div') ? audioCtx.createBiquadFilter() : null;
 
             osc.type = 'sawtooth';
             osc.frequency.setValueAtTime(freq, playTime);
             
             filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(1400, playTime);
+            filter.frequency.setValueAtTime(1500, playTime);
 
-            const duration = isLast ? 1.5 : 0.8;
-            const volume = isLast ? 0.1 : 0.08;
+            const duration = isLast ? 1.4 : 0.7;
+            const volume = isLast ? 0.09 : 0.07;
 
             gain.gain.setValueAtTime(0, playTime);
             gain.gain.linearRampToValueAtTime(volume, playTime + 0.04);
@@ -446,17 +444,18 @@
             return "m7"; 
         }
 
+        // ミニマル版の洗練されたトーンカラー
         function getChordColor(quality) {
-            if (quality.includes("#5") || quality.includes("aug")) return "#e08020"; 
-            if (quality === "M7")       return "#b82c36";      
-            if (quality === "7")        return "#cca028";      
-            if (quality === "7♭5")      return "#cca028";      
-            if (quality === "M7♭5")     return "#b82c36";      
-            if (quality === "m7")       return "#24508a";      
-            if (quality.includes("(M7)")) return "#5e305e";    
-            if (quality.includes("♭5")) return "#285a38";      
-            if (quality.includes("dim7")) return "#4a1820";    
-            return "#444444";
+            if (quality.includes("#5") || quality.includes("aug")) return "#d97706"; 
+            if (quality === "M7")       return "#dc2626";      
+            if (quality === "7")        return "#b45309";      
+            if (quality === "7♭5")      return "#b45309";      
+            if (quality === "M7♭5")     return "#dc2626";      
+            if (quality === "m7")       return "#2563eb";      
+            if (quality.includes("(M7)")) return "#7c3aed";    
+            if (quality.includes("♭5")) return "#16a34a";      
+            if (quality.includes("dim7")) return "#4c1d95";    
+            return "#4b5563";
         }
 
         const svg = document.getElementById('circle');
@@ -474,7 +473,7 @@
             const radStart = (angleStart * Math.PI) / 180;
             const radEnd = (angleEnd * Math.PI) / 180;
 
-            const hue = (150 + i * 30) % 360;
+            const hue = (160 + i * 30) % 360;
             
             const x1_out = 200 * Math.cos(radStart); const y1_out = 200 * Math.sin(radStart);
             const x2_out = 200 * Math.cos(radEnd);   const y2_out = 200 * Math.sin(radEnd);
@@ -482,9 +481,9 @@
             const x2_mid = 140 * Math.cos(radStart); const y2_mid = 140 * Math.sin(radStart);
             const dOuter = `M ${x1_out} ${y1_out} A 200 200 0 0 1 ${x2_out} ${y2_out} L ${x1_mid} ${y1_mid} A 140 140 0 0 0 ${x2_mid} ${y2_mid} Z`;
 
-            const defaultOuterFill = `hsl(${hue}, 28%, 20%)`; 
-            const activeOuterFill = `hsl(${hue}, 85%, 45%)`;  
-            const dimmedOuterFill = `#0a0e17`;                 
+            const defaultOuterFill = `hsl(${hue}, 18%, 18%)`; 
+            const activeOuterFill = `hsl(${hue}, 55%, 45%)`;  
+            const dimmedOuterFill = `#141923`;                 
 
             const pathOuter = document.createElementNS("http://www.w3.org/2000/svg", "path");
             pathOuter.setAttribute("d", dOuter);
@@ -506,7 +505,7 @@
             pathInner.setAttribute("d", dInner);
             pathInner.setAttribute("id", `quality-path-${internalNote}`);
             pathInner.setAttribute("class", "inner-quality-sector");
-            pathInner.setAttribute("fill", "#090d14"); 
+            pathInner.setAttribute("fill", "#111520"); 
             svg.appendChild(pathInner);
 
             const textAngle = (i * 30) - 90;
@@ -518,7 +517,7 @@
             text.setAttribute("text-anchor", "middle"); text.setAttribute("dominant-baseline", "central");
             text.setAttribute("class", "note-label");
             text.setAttribute("id", `text-${internalNote}`);
-            text.style.fontSize = displayNote.includes('/') ? "11px" : "16px";
+            text.style.fontSize = displayNote.includes('/') ? "11px" : "15px";
             text.textContent = displayNote;
             svg.appendChild(text);
 
@@ -550,7 +549,7 @@
             const currentParentScale = scaleSelect.value;
             const intervals = scaleIntervals[currentParentScale];
             
-            info.style.color = "#00ffaa";
+            info.style.color = "#ffffff";
             document.getElementById('modes-title').style.display = 'block';
             document.getElementById('chords-title').style.display = 'block';
 
@@ -602,7 +601,7 @@
                 const t = document.getElementById(`text-${inote}`);
                 
                 if(pOuter) { pOuter.style.fill = pOuter.dataset.dimmedFill; pOuter.style.filter = "none"; }
-                if(pInner) { pInner.style.filter = "none"; pInner.style.fill = "#06090f"; }
+                if(pInner) { pInner.style.filter = "none"; pInner.style.fill = "#11141d"; }
                 if(t) t.classList.add('dimmed-text');
             });
 
@@ -635,12 +634,12 @@
                 
                 if(targetOuterPath) {
                     targetOuterPath.style.fill = targetOuterPath.dataset.activeFill;
-                    if(deg === 0) targetOuterPath.style.filter = "drop-shadow(0px 0px 8px rgba(255,255,255,0.6))"; 
+                    if(deg === 0) targetOuterPath.style.filter = "drop-shadow(0px 4px 12px rgba(255,255,255,0.25))"; 
                 }
                 
                 if(targetInnerPath) {
                     targetInnerPath.style.fill = getChordColor(quality);
-                    if(deg === 0) targetInnerPath.style.filter = "drop-shadow(0px 0px 8px " + getChordColor(quality) + ")";
+                    if(deg === 0) targetInnerPath.style.filter = "drop-shadow(0px 4px 12px " + getChordColor(quality) + "44)";
                 }
                 
                 if(targetText) targetText.classList.remove('dimmed-text');
@@ -650,12 +649,12 @@
             arpeggioNotes.forEach((noteName, index) => {
                 setTimeout(() => {
                     playSingleNote(noteName, index, index === 7, arpeggioNotes[0]);
-                }, index * 180);
+                }, index * 170);
             });
 
             const activeModeName = modeNames[currentParentScale][modeRotationIndex];
-            const textScaleSequence = modalSmartLabels.join(' ➔ ');
-            info.innerHTML = `[ MODE ]: <span style="color:#fff; font-weight:bold;">${modalRootLabel} ${activeModeName}</span><br><span style="color:#495e85;">Notes:</span> <span style="font-family:monospace; letter-spacing:1px;">${textScaleSequence}</span>`;
+            const textScaleSequence = modalSmartLabels.join('  ·  ');
+            info.innerHTML = `<span style="font-size:13px; text-transform:uppercase; letter-spacing:1px; color:rgba(255,255,255,0.4);">Current Mode</span><br><span style="font-size:17px; font-weight:300; color:#fff;">${modalRootLabel} ${activeModeName}</span><br><span style="font-size:13px; color:rgba(255,255,255,0.5); font-weight:300; letter-spacing:0.5px;">${textScaleSequence}</span>`;
 
             modesArea.innerHTML = "";
             const currentScaleModesList = modeNames[currentParentScale];
@@ -677,9 +676,9 @@
                 const btn = document.createElement('button');
                 btn.className = 'chord-btn';
                 btn.style.setProperty('--chord-glow', getChordColor(chord.quality));
-                btn.style.borderColor = getChordColor(chord.quality); 
+                btn.style.borderColor = getChordColor(chord.quality) + "55"; // ほんのり透かす
                 btn.style.color = "#ffffff";
-                btn.innerHTML = `<span style="color:${getChordColor(chord.quality)}; font-size:10px; opacity:0.8;">${numerals[idx]}</span><br>${chord.label}`;
+                btn.innerHTML = `<span style="color:${getChordColor(chord.quality)}; font-size:10px; font-weight:600; opacity:0.8;">${numerals[idx]}</span><br><span style="font-weight:400;">${chord.label}</span>`;
                 
                 btn.addEventListener('click', () => {
                     playNotes(chord.notes);
@@ -693,14 +692,14 @@
                 renderModalUniverse(0);
             } else {
                 document.querySelectorAll('path.outer-note-sector').forEach(p => p.style.fill = p.dataset.defaultFill);
-                document.querySelectorAll('path.inner-quality-sector').forEach(p => p.style.fill = "#090d14");
+                document.querySelectorAll('path.inner-quality-sector').forEach(p => p.style.fill = "#111520");
                 document.querySelectorAll('text.note-label').forEach(t => t.classList.remove('dimmed-text'));
                 document.querySelectorAll('.quality-label').forEach(q => { q.classList.remove('show'); q.textContent = ""; });
                 modesArea.innerHTML = ""; chordArea.innerHTML = "";
                 document.getElementById('modes-title').style.display = 'none';
                 document.getElementById('chords-title').style.display = 'none';
                 enharmonicToggle.style.display = 'none';
-                info.style.color = "#7187b3";
+                info.style.color = "rgba(255, 255, 255, 0.6)";
                 info.textContent = "Select a Parent Scale, then click a note on the wheel to begin.";
                 currentSelectedRoot = null;
             }
