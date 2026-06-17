@@ -106,7 +106,6 @@
             letter-spacing: 0.2px;
         }
 
-        /* 🔄 画面右上に戻るリンクスタイルを追加 */
         .nav-btn {
             position: fixed;
             top: 20px;
@@ -320,7 +319,7 @@
             { id: "m3_4", name: "Dorian ♯4", parent: "Harmonic Minor", degrees: "Ⅰ Ⅱ ♭Ⅲ ♯Ⅳ Ⅴ Ⅵ ♭Ⅶ", semitones: [0, 2, 3, 6, 7, 9, 10], chord: "m7", gridX: 720, gridY: 300, lineLevel: 4 },
             { id: "m3_1", name: "Harmonic Minor", parent: "Harmonic Minor", degrees: "Ⅰ Ⅱ ♭Ⅲ Ⅳ Ⅴ ♭Ⅵ Ⅶ", semitones: [0, 2, 3, 5, 7, 8, 11], chord: "m(M7)", gridX: 720, gridY: 420, lineLevel: 4 },
             { id: "m3_5", name: "Phrygian Dominant", parent: "Harmonic Minor", degrees: "Ⅰ ♭Ⅱ Ⅲ Ⅳ Ⅴ ♭Ⅵ ♭Ⅶ", semitones: [0, 1, 4, 5, 7, 8, 10], chord: "7", gridX: 720, gridY: 540, lineLevel: 6 },
-            { id: "m3_2", name: "Locrian ♮6", parent: "Harmonic Minor", degrees: "Ⅰ ♭Ⅱ ♭Ⅲ Ⅳ ♭Ⅴ Ⅵ ♭Ⅶ", semitones: [0, 1, 3, 5, 6, 9, 10], chord: "m7♭5", gridX: 720, gridY: 660, borderAlpha: 8 },
+            { id: "m3_2", name: "Locrian ♮6", parent: "Harmonic Minor", degrees: "Ⅰ ♭Ⅱ ♭Ⅲ Ⅳ ♭Ⅴ Ⅵ ♭Ⅶ", semitones: [0, 1, 3, 5, 6, 9, 10], chord: "m7♭5", gridX: 720, gridY: 660, lineLevel: 8 }, /* 🛠️ ここが borderAlpha となっていたバグを正しい lineLevel に完全に修正 */
             { id: "m3_7", name: "Ultralocrian", parent: "Harmonic Minor", degrees: "Ⅰ ♭Ⅱ ♭Ⅲ ♭Ⅳ ♭Ⅴ ♭Ⅵ 𝄫Ⅶ", semitones: [0, 1, 3, 4, 6, 8, 9], chord: "dim7", gridX: 720, gridY: 780, lineLevel: 11 },
 
             // Harmonic Major
