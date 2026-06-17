@@ -190,9 +190,7 @@
         const modeNames = {
             "major": ["Ionian", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian"],
             "melodic-minor": ["Melodic Minor", "Dorian ♭2", "Lydian Augmented", "Lydian Dominant", "Mixolydian ♭6", "Locrian ♮2", "Altered / Super Locrian"],
-            // ★ Harmonic Minorの3つ目を Ionian Augmented に修正
             "harmonic-minor": ["Harmonic Minor", "Locrian ♮6", "Ionian Augmented", "Dorian ♯4", "Phrygian Dominant", "Lydian ♯2", "Ultralocrian / Altered 𝄫7"],
-            // ★ Harmonic Majorの3つ目を Locrian ♭2 に修正
             "harmonic-major": ["Harmonic Major", "Dorian ♭5", "Locrian ♭2", "Lydian ♭3", "Mixolydian ♭2", "Lydian Augmented ♯2", "Locrian 𝄫7"]
         };
 
@@ -203,6 +201,48 @@
         };
 
         let currentSelectedRoot = null;
+
+        // ★新規追加：アルファベット重複を避けて、適切な♯/♭の文字列表記を自動生成するロジック
+        function getSmartScaleLabels(notesArray, startAlphabetIndex = 2) {
+            // startAlphabetIndex: 0=A, 1=B, 2=C, 3=D, 4=E, 5=F, 6=G
+            const alphabets = ["A", "B", "C", "D", "E", "F", "G"];
+            
+            // 各半音インデックスに対する、候補となる音楽表記マップ
+            const spellings = {
+                "C":  { normal: "C",  alt: "B♯" },
+                "Db": { normal: "D♭", alt: "C♯" },
+                "D":  { normal: "D",  alt: "D" },
+                "Eb": { normal: "E♭", alt: "D♯" },
+                "E":  { normal: "E",  alt: "F♭" },
+                "F":  { normal: "F",  alt: "E♯" },
+                "Gb": { normal: "G♭", alt: "F♯" },
+                "G":  { normal: "G",  alt: "G" },
+                "Ab": { normal: "A♭", alt: "G♯" },
+                "A":  { normal: "A",  alt: "A" },
+                "Bb": { normal: "B♭", alt: "A♯" },
+                "B":  { normal: "B",  alt: "C♭" }
+            };
+
+            let currentLetterIdx = startAlphabetIndex;
+            return notesArray.map((internalNote) => {
+                const targetLetter = alphabets[currentLetterIdx];
+                const opts = spellings[internalNote];
+                
+                let chosen = opts.normal;
+                if (!opts.normal.startsWith(targetLetter) && opts.alt && opts.alt.startsWith(targetLetter)) {
+                    chosen = opts.alt;
+                }
+                
+                currentLetterIdx = (currentLetterIdx + 1) % 7;
+                return chosen;
+            });
+        }
+
+        // ルート音から最初のアルファベットのインデックスを特定する
+        function getAlphabetIndexFromNote(internalNote) {
+            const firstChar = internalToDisplay[internalNote].charAt(0);
+            return ["A", "B", "C", "D", "E", "F", "G"].indexOf(firstChar);
+        }
 
         function playNotes(chordNotes) {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -417,6 +457,16 @@
             }
             const modalRoot = modalScaleNotes[0];
 
+            // ★ 音楽理論に沿った綺麗なスマート表記配列をここで生成
+            const parentAlphabetStartIdx = getAlphabetIndexFromNote(currentSelectedRoot);
+            const parentSmartLabels = getSmartScaleLabels(parentScaleNotes, parentAlphabetStartIdx);
+            
+            const modalSmartLabels = [];
+            for (let i = 0; i < 7; i++) {
+                modalSmartLabels.push(parentSmartLabels[(i + modeRotationIndex) % 7]);
+            }
+            const modalRootLabel = modalSmartLabels[0];
+
             circleOfFifths.forEach(dn => {
                 const inote = displayToInternal[dn];
                 const pOuter = document.getElementById(`path-${inote}`);
@@ -441,7 +491,8 @@
                 const s = modalScaleNotes[(deg + 6) % 7];
                 
                 const quality = getChordQuality(r, t, f, s);
-                const displayRoot = internalToDisplay[r];
+                // コードのルート表記もスマート化
+                const displayRoot = modalSmartLabels[deg];
                 diatonicChords.push({ root: r, notes: [r, t, f, s], label: displayRoot + quality, quality: quality });
 
                 const qElement = document.getElementById(`quality-${r}`);
@@ -475,15 +526,16 @@
             });
 
             const activeModeName = modeNames[currentParentScale][modeRotationIndex];
-            const displayModalRoot = internalToDisplay[modalRoot];
-            const textScaleSequence = modalScaleNotes.map(n => internalToDisplay[n]).join(' - ');
-            info.innerHTML = `【Current Mode: ${displayModalRoot} ${activeModeName}】<br>Notes: ${textScaleSequence}`;
+            // ★ テキスト表示部分をすっきりしたスマート表記（F - G - A - B♭...）に変更
+            const textScaleSequence = modalSmartLabels.join(' - ');
+            info.innerHTML = `【Current Mode: ${modalRootLabel} ${activeModeName}】<br>Notes: ${textScaleSequence}`;
 
             modesArea.innerHTML = "";
             const currentScaleModesList = modeNames[currentParentScale];
             currentScaleModesList.forEach((mName, idx) => {
                 const modeBtn = document.createElement('button');
-                const modeRootName = internalToDisplay[parentScaleNotes[idx]];
+                // モードボタンのルート名もすっきり化
+                const modeRootName = parentSmartLabels[idx];
                 modeBtn.textContent = `${modeRootName} ${mName}`;
                 if(idx === modeRotationIndex) modeBtn.className = 'active-mode-btn';
                 
