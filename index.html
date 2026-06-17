@@ -293,9 +293,21 @@
             border-color: var(--chord-glow, rgba(255,255,255,0.4)) !important;
             box-shadow: 0 0 12px var(--chord-glow, rgba(255,255,255,0.1));
         }
+        /* 🎬 ページ遷移用のフェード用カーテン */
+.fade-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: #0b0f19; /* 五度圏側の背景色に合わせる */
+    z-index: 10000;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.4s ease;
+}
     </style>
 </head>
 <body>
+    <div class="fade-overlay" id="fadeOverlay"></div>
+<button onclick="navigateWithFade('map.html')" style="position: fixed; top: 20px; right: 20px; z-index: 9999; color: rgba(255, 255, 255, 0.65); border: 1px solid rgba(255, 255, 255, 0.07); padding: 8px 16px; border-radius: 20px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); letter-spacing: 1px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; font-size: 11px; font-weight: 500;" onmouseover="this.style.color='#ffffff'; this.style.backgroundColor='rgba(255, 255, 255, 0.08)'; this.style.borderColor='rgba(255, 255, 255, 0.2)';" onmouseout="this.style.color='rgba(255, 255, 255, 0.65)'; this.style.backgroundColor='rgba(255, 255, 255, 0.03)'; this.style.borderColor='rgba(255, 255, 255, 0.07)';">➔ VIEW NETWORK MAP</button>
 <a href="map.html" style="position: fixed; top: 20px; right: 20px; z-index: 9999; color: rgba(255, 255, 255, 0.65); text-decoration: none; font-size: 11px; font-weight: 500; border: 1px solid rgba(255, 255, 255, 0.07); padding: 8px 16px; border-radius: 20px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); letter-spacing: 1px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);" onmouseover="this.style.color='#ffffff'; this.style.backgroundColor='rgba(255, 255, 255, 0.08)'; this.style.borderColor='rgba(255, 255, 255, 0.2)';" onmouseout="this.style.color='rgba(255, 255, 255, 0.65)'; this.style.backgroundColor='rgba(255, 255, 255, 0.03)'; this.style.borderColor='rgba(255, 255, 255, 0.07)';">➔ VIEW NETWORK MAP</a>
     <h1>Immersive Circle of Fifths</h1>
     
@@ -760,6 +772,21 @@
                 currentSelectedRoot = null;
             }
         });
+        // 🎬 ページフェードイン・アウト処理
+window.addEventListener('DOMContentLoaded', () => {
+    const overlay = document.getElementById('fadeOverlay');
+    setTimeout(() => {
+        overlay.style.opacity = '0';
+    }, 50);
+});
+
+function navigateWithFade(url) {
+    const overlay = document.getElementById('fadeOverlay');
+    overlay.style.opacity = '1';
+    setTimeout(() => {
+        window.location.href = url;
+    }, 400);
+}
     </script>
 </body>
 </html>
