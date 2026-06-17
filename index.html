@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Immersive Circle of Fifths</title>
     
+    <!-- SNSシェア用の設定 (OGP) -->
     <meta property="og:url" content="https://dara-dara-bouka.github.io/immersive-circle-of-fifths/">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Immersive Circle of Fifths">
@@ -264,13 +265,11 @@
         const chromatic = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
         const circleOfFifths = ["C", "G", "D", "A", "E", "B", "F#/Gb", "C#/Db", "G#/Ab", "D#/Eb", "A#/Bb", "F"];
 
-        // 内部処理用のデフォルトマッピング
         const displayToInternal = {
             "C": "C", "G": "G", "D": "D", "A": "A", "E": "E", "B": "B", "F": "F",
             "F#/Gb": "Gb", "C#/Db": "Db", "G#/Ab": "Ab", "D#/Eb": "Eb", "A#/Bb": "Bb"
         };
 
-        // 異名同音（シャープ系・フラット系）のペア定義
         const enharmonicPairs = {
             "Gb": "F#", "F#": "Gb",
             "Db": "C#", "C#": "Db",
@@ -444,12 +443,12 @@
             return "m7"; 
         }
 
-        // ミニマル版の洗練されたトーンカラー
+        // 7の色を渋いブラウンから、美しいゴールド・イエロー(#eab308)に変更！
         function getChordColor(quality) {
             if (quality.includes("#5") || quality.includes("aug")) return "#d97706"; 
             if (quality === "M7")       return "#dc2626";      
-            if (quality === "7")        return "#b45309";      
-            if (quality === "7♭5")      return "#b45309";      
+            if (quality === "7")        return "#eab308"; // ★より鮮やかなイエローゴールドへ変更
+            if (quality === "7♭5")      return "#eab308"; // ★こちらも連動してイエローへ変更
             if (quality === "M7♭5")     return "#dc2626";      
             if (quality === "m7")       return "#2563eb";      
             if (quality.includes("(M7)")) return "#7c3aed";    
@@ -536,7 +535,6 @@
             });
         });
 
-        // 異名同音切り替えボタンのイベント
         enharmonicToggle.addEventListener('click', () => {
             if (currentSelectedRoot && enharmonicPairs[currentSelectedRoot]) {
                 currentSelectedRoot = enharmonicPairs[currentSelectedRoot];
@@ -676,7 +674,7 @@
                 const btn = document.createElement('button');
                 btn.className = 'chord-btn';
                 btn.style.setProperty('--chord-glow', getChordColor(chord.quality));
-                btn.style.borderColor = getChordColor(chord.quality) + "55"; // ほんのり透かす
+                btn.style.borderColor = getChordColor(chord.quality) + "55"; 
                 btn.style.color = "#ffffff";
                 btn.innerHTML = `<span style="color:${getChordColor(chord.quality)}; font-size:10px; font-weight:600; opacity:0.8;">${numerals[idx]}</span><br><span style="font-weight:400;">${chord.label}</span>`;
                 
