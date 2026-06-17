@@ -13,7 +13,7 @@
     <meta name="twitter:card" content="summary_large_image">
 
     <style>
-        /* 最新のCSS機能で座標を数値として定義（これにより100%シームレスに動きます） */
+        /* 最新のCSS機能で座標を数値として定義 */
         @property --x1 { syntax: '<percentage>'; inherits: false; initial-value: 30%; }
         @property --y1 { syntax: '<percentage>'; inherits: false; initial-value: -10%; }
         @property --x2 { syntax: '<percentage>'; inherits: false; initial-value: 85%; }
@@ -38,41 +38,21 @@
             position: relative;
             overflow-x: hidden;
             
-            /* 定義した数値型のカスタムプロパティをグラデーションに適用 */
             background-image: 
                 radial-gradient(circle at var(--x1) var(--y1), #1c264f 0%, transparent 65%),
                 radial-gradient(circle at var(--x2) var(--y2), #060b1c 0%, transparent 60%),
                 radial-gradient(circle at var(--x3) var(--y3), #1c153d 0%, transparent 55%);
             
-            /* 18秒かけて、カクつきを一切排除したリニアで極上のうねりを実現 */
             animation: seamlessAurora 18s ease-in-out infinite alternate;
         }
 
-        /* 座標（数値）だけを変化させることで、ブラウザが滑らかなコマ送りを自動生成 */
         @keyframes seamlessAurora {
-            0% {
-                --x1: 20%;  --y1: -10%;
-                --x2: 85%;  --y2: 85%;
-                --x3: 10%;  --y3: 50%;
-            }
-            33% {
-                --x1: 75%;  --y1: -20%;
-                --x2: 25%;  --y2: 90%;
-                --x3: 90%;  --y3: 30%;
-            }
-            66% {
-                --x1: 50%;  --y1: 105%;
-                --x2: 15%;  --y2: -15%;
-                --x3: 80%;  --y3: 75%;
-            }
-            100% {
-                --x1: 15%;  --y1: 95%;
-                --x2: 85%;  --y2: -10%;
-                --x3: 35%;  --y3: 15%;
-            }
+            0% { --x1: 20%; --y1: -10%; --x2: 85%; --y2: 85%; --x3: 10%; --y3: 50%; }
+            33% { --x1: 75%; --y1: -20%; --x2: 25%; --y2: 90%; --x3: 90%; --y3: 30%; }
+            66% { --x1: 50%; --y1: 105%; --x2: 15%; --y2: -15%; --x3: 80%; --y3: 75%; }
+            100% { --x1: 15%; --y1: 95%; --x2: 85%; --y2: -10%; --x3: 35%; --y3: 15%; }
         }
 
-        /* 画面全体に極薄の高級ノイズ（ザラザラ感）を重ねる擬似要素 */
         body::before {
             content: "";
             position: fixed;
@@ -82,8 +62,7 @@
             z-index: 1;
         }
 
-        /* コンテンツ全体をノイズや背景より手前に配置 */
-        h1, .controls, svg, #info, .section-title, .container-block {
+        h1, .controls, svg, #info, .section-title, .container-block, .nav-btn {
             position: relative;
             z-index: 2;
         }
@@ -99,7 +78,6 @@
             text-shadow: 0 4px 15px rgba(0,0,0,0.6);
         }
         
-        /* コントロールパネル（洗練された半透明ガラス） */
         .controls {
             margin-bottom: 25px;
             display: flex;
@@ -138,7 +116,6 @@
             background-color: rgba(8, 10, 15, 0.9);
         }
 
-        /* 異名同音切り替えボタン */
         button.toggle-enharmonic {
             padding: 6px 14px;
             font-size: 12px;
@@ -158,7 +135,6 @@
             background-color: rgba(255, 255, 255, 0.12);
         }
 
-        /* 五度圏ホイール */
         svg { 
             margin: 10px 0;
             filter: drop-shadow(0 15px 35px rgba(0,0,0,0.6));
@@ -205,7 +181,6 @@
             fill: rgba(255, 255, 255, 0.09) !important;
         }
 
-        /* 情報表示ディスプレイ */
         #info {
             font-size: 15px;
             color: rgba(255, 255, 255, 0.6);
@@ -223,7 +198,6 @@
             backdrop-filter: blur(6px);
         }
 
-        /* セクションタイトル */
         .section-title {
             font-size: 11px;
             text-transform: uppercase;
@@ -242,7 +216,6 @@
             margin-bottom: 5px;
         }
 
-        /* ミニマルボタングランドデザイン */
         button {
             padding: 9px 15px;
             font-size: 13px;
@@ -266,7 +239,6 @@
             transform: scale(0.98);
         }
 
-        /* モード選択（アクティブ時：極上ホワイト・ガラス） */
         button.active-mode-btn {
             background-color: rgba(255, 255, 255, 0.93);
             border-color: #ffffff;
@@ -280,7 +252,6 @@
             box-shadow: 0 4px 20px rgba(255, 255, 255, 0.22);
         }
 
-        /* コードボタン専用スタイル */
         button.chord-btn {
             min-width: 75px;
             line-height: 1.4;
@@ -293,22 +264,52 @@
             border-color: var(--chord-glow, rgba(255,255,255,0.4)) !important;
             box-shadow: 0 0 12px var(--chord-glow, rgba(255,255,255,0.1));
         }
-        /* 🎬 ページ遷移用のフェード用カーテン */
-.fade-overlay {
-    position: fixed;
-    top: 0; left: 0; width: 100vw; height: 100vh;
-    background-color: #0b0f19; /* 五度圏側の背景色に合わせる */
-    z-index: 10000;
-    pointer-events: none;
-    opacity: 1;
-    transition: opacity 0.4s ease;
-}
+
+        /* プレミアム・ナビゲーションボタン専用スタイル */
+        .nav-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            color: rgba(255, 255, 255, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            letter-spacing: 1px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 500;
+            font-family: inherit;
+        }
+        .nav-btn:hover {
+            color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        /* 🎬 ページ遷移用のフェードカーテン */
+        .fade-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #080a0f; /* 完全にこのHTMLの背景色にシンクロ */
+            z-index: 10000;
+            pointer-events: none;
+            opacity: 1;
+            transition: opacity 0.4s ease;
+        }
     </style>
 </head>
 <body>
     <div class="fade-overlay" id="fadeOverlay"></div>
-<button onclick="navigateWithFade('map.html')" style="position: fixed; top: 20px; right: 20px; z-index: 9999; color: rgba(255, 255, 255, 0.65); border: 1px solid rgba(255, 255, 255, 0.07); padding: 8px 16px; border-radius: 20px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); letter-spacing: 1px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; font-size: 11px; font-weight: 500;" onmouseover="this.style.color='#ffffff'; this.style.backgroundColor='rgba(255, 255, 255, 0.08)'; this.style.borderColor='rgba(255, 255, 255, 0.2)';" onmouseout="this.style.color='rgba(255, 255, 255, 0.65)'; this.style.backgroundColor='rgba(255, 255, 255, 0.03)'; this.style.borderColor='rgba(255, 255, 255, 0.07)';">➔ VIEW NETWORK MAP</button>
-<a href="map.html" style="position: fixed; top: 20px; right: 20px; z-index: 9999; color: rgba(255, 255, 255, 0.65); text-decoration: none; font-size: 11px; font-weight: 500; border: 1px solid rgba(255, 255, 255, 0.07); padding: 8px 16px; border-radius: 20px; background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); letter-spacing: 1px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);" onmouseover="this.style.color='#ffffff'; this.style.backgroundColor='rgba(255, 255, 255, 0.08)'; this.style.borderColor='rgba(255, 255, 255, 0.2)';" onmouseout="this.style.color='rgba(255, 255, 255, 0.65)'; this.style.backgroundColor='rgba(255, 255, 255, 0.03)'; this.style.borderColor='rgba(255, 255, 255, 0.07)';">➔ VIEW NETWORK MAP</a>
+
+    <button onclick="navigateWithFade('map.html')" class="nav-btn">➔ VIEW NETWORK MAP</button>
+
     <h1>Immersive Circle of Fifths</h1>
     
     <div class="controls">
@@ -359,7 +360,6 @@
             "major": ["Ionian", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian"],
             "melodic-minor": ["Melodic Minor", "Dorian ♭2", "Lydian Augmented", "Lydian Dominant", "Mixolydian ♭6", "Locrian ♮2", "Altered / Super Locrian"],
             "harmonic-minor": ["Harmonic Minor", "Locrian ♮6", "Ionian Augmented", "Dorian ♯4", "Phrygian Dominant", "Lydian ♯2", "Ultralocrian / Altered 𝄫7"],
-            // 🚀 FIXED: 3番目の要素を "Locrian ♭2" から "Phrygian ♭4" へ完全に修正しました！
             "harmonic-major": ["Harmonic Major", "Dorian ♭5", "Phrygian ♭4", "Lydian ♭3", "Mixolydian ♭2", "Lydian Augmented ♯2", "Locrian 𝄫7"]
         };
 
@@ -523,7 +523,7 @@
             if (quality === "m7")       return "#2563eb";      
             if (quality.includes("(M7)")) return "#7c3aed";    
             if (quality.includes("♭5")) return "#16a34a";      
-            if (quality.includes("dim7")) return "#580242";    // 🟪 FIXED: わかりやすい濃い赤紫に変更
+            if (quality.includes("dim7")) return "#580242";    
             return "#4b5563";
         }
 
@@ -772,21 +772,22 @@
                 currentSelectedRoot = null;
             }
         });
-        // 🎬 ページフェードイン・アウト処理
-window.addEventListener('DOMContentLoaded', () => {
-    const overlay = document.getElementById('fadeOverlay');
-    setTimeout(() => {
-        overlay.style.opacity = '0';
-    }, 50);
-});
 
-function navigateWithFade(url) {
-    const overlay = document.getElementById('fadeOverlay');
-    overlay.style.opacity = '1';
-    setTimeout(() => {
-        window.location.href = url;
-    }, 400);
-}
+        /* 🎬 ページフェードイン・アウト処理 */
+        window.addEventListener('DOMContentLoaded', () => {
+            const overlay = document.getElementById('fadeOverlay');
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+            }, 50);
+        });
+
+        function navigateWithFade(url) {
+            const overlay = document.getElementById('fadeOverlay');
+            overlay.style.opacity = '1';
+            setTimeout(() => {
+                window.location.href = url;
+            }, 400);
+        }
     </script>
 </body>
 </html>

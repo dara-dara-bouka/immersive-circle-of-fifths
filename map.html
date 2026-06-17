@@ -124,6 +124,7 @@
             letter-spacing: 1px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
         }
         .nav-btn:hover {
             color: #ffffff;
@@ -257,25 +258,24 @@
         }
         .legend-item { display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.7);}
         .legend-color { width: 12px; height: 12px; border-radius: 3px; }
-        /* 🎬 ページ遷移用のフェード用カーテン */
-.fade-overlay {
-    position: fixed;
-    top: 0; left: 0; width: 100vw; height: 100vh;
-    background-color: #080306; /* 背景と同じ色 */
-    z-index: 10000; /* 一番手前に */
-    pointer-events: none;
-    opacity: 1; /* 最初は真っ黒 */
-    transition: opacity 0.4s ease;
-}
-.fade-overlay.fade-out {
-    opacity: 1;
-}
+
+        /* 🎬 ページ遷移用のフェードカーテン */
+        .fade-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #080306;
+            z-index: 10000;
+            pointer-events: none;
+            opacity: 1;
+            transition: opacity 0.4s ease;
+        }
     </style>
 </head>
 <body>
-<div class="fade-overlay" id="fadeOverlay"></div>
-<button onclick="navigateWithFade('index.html')" class="nav-btn" style="cursor: pointer; background: rgba(255, 255, 255, 0.03);">➔ BACK TO WHEEL</button>
-    <a href="index.html" class="nav-btn">➔ BACK TO WHEEL</a>
+
+    <div class="fade-overlay" id="fadeOverlay"></div>
+
+    <button onclick="navigateWithFade('index.html')" class="nav-btn">➔ BACK TO WHEEL</button>
 
     <h1>28 Modes Network Map</h1>
     <p>Drag any card freely to explore linkages. Hides parent headers when switching layouts. Automatically expands each mode into an optimized, overlap-free dynamic matrix based on tonality levels.</p>
@@ -333,7 +333,7 @@
             { id: "m3_4", name: "Dorian ♯4", parent: "Harmonic Minor", degrees: "Ⅰ Ⅱ ♭Ⅲ ♯Ⅳ Ⅴ Ⅵ ♭Ⅶ", semitones: [0, 2, 3, 6, 7, 9, 10], chord: "m7", gridX: 720, gridY: 300, lineLevel: 4 },
             { id: "m3_1", name: "Harmonic Minor", parent: "Harmonic Minor", degrees: "Ⅰ Ⅱ ♭Ⅲ Ⅳ Ⅴ ♭Ⅵ Ⅶ", semitones: [0, 2, 3, 5, 7, 8, 11], chord: "m(M7)", gridX: 720, gridY: 420, lineLevel: 4 },
             { id: "m3_5", name: "Phrygian Dominant", parent: "Harmonic Minor", degrees: "Ⅰ ♭Ⅱ Ⅲ Ⅳ Ⅴ ♭Ⅵ ♭Ⅶ", semitones: [0, 1, 4, 5, 7, 8, 10], chord: "7", gridX: 720, gridY: 540, lineLevel: 6 },
-            { id: "m3_2", name: "Locrian ♮6", parent: "Harmonic Minor", degrees: "Ⅰ ♭Ⅱ ♭Ⅲ Ⅳ ♭Ⅴ Ⅵ ♭Ⅶ", semitones: [0, 1, 3, 5, 6, 9, 10], chord: "m7♭5", gridX: 720, gridY: 660, lineLevel: 8 }, /* 🛠️ ここが borderAlpha となっていたバグを正しい lineLevel に完全に修正 */
+            { id: "m3_2", name: "Locrian ♮6", parent: "Harmonic Minor", degrees: "Ⅰ ♭Ⅱ ♭Ⅲ Ⅳ ♭Ⅴ Ⅵ ♭Ⅶ", semitones: [0, 1, 3, 5, 6, 9, 10], chord: "m7♭5", gridX: 720, gridY: 660, lineLevel: 8 },
             { id: "m3_7", name: "Ultralocrian", parent: "Harmonic Minor", degrees: "Ⅰ ♭Ⅱ ♭Ⅲ ♭Ⅳ ♭Ⅴ ♭Ⅵ 𝄫Ⅶ", semitones: [0, 1, 3, 4, 6, 8, 9], chord: "dim7", gridX: 720, gridY: 780, lineLevel: 11 },
 
             // Harmonic Major
@@ -495,7 +495,7 @@
                             svg.appendChild(line1);
 
                             const line2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                            line2.setAttribute("x1", x1); line2.setAttribute("y1", y1); 
+                            line2.setAttribute("x1", x1); line1.setAttribute("y1", y1); 
                             line2.setAttribute("x2", x2); line2.setAttribute("y2", y2);
                             line2.setAttribute("stroke", colorB);
                             line2.setAttribute("stroke-width", "2.5");
@@ -549,22 +549,23 @@
 
         window.addEventListener("load", drawEdges);
         window.addEventListener("resize", drawEdges);
-        // 🎬 ページフェードイン・アウト処理
-window.addEventListener('DOMContentLoaded', () => {
-    const overlay = document.getElementById('fadeOverlay');
-    // ページ読み込み時にフワッと表示
-    setTimeout(() => {
-        overlay.style.opacity = '0';
-    }, 50);
-});
 
-function navigateWithFade(url) {
-    const overlay = document.getElementById('fadeOverlay');
-    overlay.style.opacity = '1'; // 真っ黒にする
-    setTimeout(() => {
-        window.location.href = url; // 0.4秒後にページ移動
-    }, 400);
-}
+        /* 🎬 フェードイン・アウト用のスクリプト */
+        window.addEventListener('DOMContentLoaded', () => {
+            const overlay = document.getElementById('fadeOverlay');
+            // ページ表示時にフワッと暗転を解除
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+            }, 50);
+        });
+
+        function navigateWithFade(url) {
+            const overlay = document.getElementById('fadeOverlay');
+            overlay.style.opacity = '1'; // 暗転させる
+            setTimeout(() => {
+                window.location.href = url; // 0.4秒後にページ移動
+            }, 400);
+        }
     </script>
 </body>
 </html>
