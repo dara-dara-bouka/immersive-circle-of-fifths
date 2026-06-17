@@ -202,25 +202,27 @@
 
         let currentSelectedRoot = null;
 
-        // ★新規追加：アルファベット重複を避けて、適切な♯/♭の文字列表記を自動生成するロジック
-        function getSmartScaleLabels(notesArray, startAlphabetIndex = 2) {
-            // startAlphabetIndex: 0=A, 1=B, 2=C, 3=D, 4=E, 5=F, 6=G
+        // ★ロジック大幅強化：ルート音の調性（♯系か♭系か）に応じて、正しく文字列をマッピングする
+        function getSmartScaleLabels(notesArray, rootNote, startAlphabetIndex) {
             const alphabets = ["A", "B", "C", "D", "E", "F", "G"];
             
-            // 各半音インデックスに対する、候補となる音楽表記マップ
+            // ♭系（フラットベース）にするキーのリスト
+            const flatKeys = ["F", "Bb", "Eb", "Ab", "Db", "Gb"];
+            const isFlatKey = flatKeys.includes(rootNote);
+
             const spellings = {
-                "C":  { normal: "C",  alt: "B♯" },
-                "Db": { normal: "D♭", alt: "C♯" },
-                "D":  { normal: "D",  alt: "D" },
-                "Eb": { normal: "E♭", alt: "D♯" },
-                "E":  { normal: "E",  alt: "F♭" },
-                "F":  { normal: "F",  alt: "E♯" },
-                "Gb": { normal: "G♭", alt: "F♯" },
-                "G":  { normal: "G",  alt: "G" },
-                "Ab": { normal: "A♭", alt: "G♯" },
-                "A":  { normal: "A",  alt: "A" },
-                "Bb": { normal: "B♭", alt: "A♯" },
-                "B":  { normal: "B",  alt: "C♭" }
+                "C":  { normal: "C",  flatPrefer: "C",   sharpPrefer: "B♯" },
+                "Db": { normal: "D♭", flatPrefer: "D♭",  sharpPrefer: "C♯" },
+                "D":  { normal: "D",  flatPrefer: "D",   sharpPrefer: "D" },
+                "Eb": { normal: "E♭", flatPrefer: "E♭",  sharpPrefer: "D♯" },
+                "E":  { normal: "E",  flatPrefer: "F♭",  sharpPrefer: "E" },
+                "F":  { normal: "F",  flatPrefer: "F",   sharpPrefer: "E♯" },
+                "Gb": { normal: "G♭", flatPrefer: "G♭",  sharpPrefer: "F♯" },
+                "G":  { normal: "G",  flatPrefer: "G",   sharpPrefer: "G" },
+                "Ab": { normal: "A♭", flatPrefer: "A♭",  sharpPrefer: "G♯" },
+                "A":  { normal: "A",  flatPrefer: "A",   sharpPrefer: "A" },
+                "Bb": { normal: "B♭", flatPrefer: "B♭",  sharpPrefer: "A♯" },
+                "B":  { normal: "B",  flatPrefer: "C♭",  sharpPrefer: "B" }
             };
 
             let currentLetterIdx = startAlphabetIndex;
@@ -228,9 +230,14 @@
                 const targetLetter = alphabets[currentLetterIdx];
                 const opts = spellings[internalNote];
                 
-                let chosen = opts.normal;
-                if (!opts.normal.startsWith(targetLetter) && opts.alt && opts.alt.startsWith(targetLetter)) {
-                    chosen = opts.alt;
+                // 基本方針の決定
+                let chosen = isFlatKey ? opts.flatPrefer : opts.sharpPrefer;
+
+                // もし選んだ文字がターゲットのアルファベットと合致しない場合、もう一方の候補でアルファベットが合うかチェック
+                if (!chosen.startsWith(targetLetter)) {
+                    if (opts.flatPrefer.startsWith(targetLetter)) chosen = opts.flatPrefer;
+                    else if (opts.sharpPrefer.startsWith(targetLetter)) chosen = opts.sharpPrefer;
+                    else if (opts.normal.startsWith(targetLetter)) chosen = opts.normal;
                 }
                 
                 currentLetterIdx = (currentLetterIdx + 1) % 7;
@@ -238,9 +245,16 @@
             });
         }
 
-        // ルート音から最初のアルファベットのインデックスを特定する
-        function getAlphabetIndexFromNote(internalNote) {
-            const firstChar = internalToDisplay[internalNote].charAt(0);
+        // ルート音から最初のアルファベットのインデックスを特定する（A=0, B=1, C=2...）
+        function getAlphabetIndexFromNote(internalNote, rootNote) {
+            const flatKeys = ["F", "Bb", "Eb", "Ab", "Db", "Gb"];
+            let disp = internalToDisplay[internalNote];
+            
+            // キーに応じて初期表示文字をマッピング
+            if (disp.includes('/')) {
+                disp = flatKeys.includes(rootNote) ? disp.split('/')[1] : disp.split('/')[0];
+            }
+            const firstChar = disp.charAt(0);
             return ["A", "B", "C", "D", "E", "F", "G"].indexOf(firstChar);
         }
 
@@ -457,9 +471,9 @@
             }
             const modalRoot = modalScaleNotes[0];
 
-            // ★ 音楽理論に沿った綺麗なスマート表記配列をここで生成
-            const parentAlphabetStartIdx = getAlphabetIndexFromNote(currentSelectedRoot);
-            const parentSmartLabels = getSmartScaleLabels(parentScaleNotes, parentAlphabetStartIdx);
+            // ★ 選択したルート音（主音）基準で、♯/♭系を最適に判断してラベル生成
+            const parentAlphabetStartIdx = getAlphabetIndexFromNote(currentSelectedRoot, currentSelectedRoot);
+            const parentSmartLabels = getSmartScaleLabels(parentScaleNotes, currentSelectedRoot, parentAlphabetStartIdx);
             
             const modalSmartLabels = [];
             for (let i = 0; i < 7; i++) {
@@ -491,7 +505,6 @@
                 const s = modalScaleNotes[(deg + 6) % 7];
                 
                 const quality = getChordQuality(r, t, f, s);
-                // コードのルート表記もスマート化
                 const displayRoot = modalSmartLabels[deg];
                 diatonicChords.push({ root: r, notes: [r, t, f, s], label: displayRoot + quality, quality: quality });
 
@@ -526,7 +539,6 @@
             });
 
             const activeModeName = modeNames[currentParentScale][modeRotationIndex];
-            // ★ テキスト表示部分をすっきりしたスマート表記（F - G - A - B♭...）に変更
             const textScaleSequence = modalSmartLabels.join(' - ');
             info.innerHTML = `【Current Mode: ${modalRootLabel} ${activeModeName}】<br>Notes: ${textScaleSequence}`;
 
@@ -534,7 +546,6 @@
             const currentScaleModesList = modeNames[currentParentScale];
             currentScaleModesList.forEach((mName, idx) => {
                 const modeBtn = document.createElement('button');
-                // モードボタンのルート名もすっきり化
                 const modeRootName = parentSmartLabels[idx];
                 modeBtn.textContent = `${modeRootName} ${mName}`;
                 if(idx === modeRotationIndex) modeBtn.className = 'active-mode-btn';
