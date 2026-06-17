@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Immersive Circle of Fifths</title>
     
+    <!-- SNSシェア用の設定 (OGP) -->
     <meta property="og:url" content="https://dara-dara-bouka.github.io/immersive-circle-of-fifths/">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Immersive Circle of Fifths">
@@ -13,7 +14,15 @@
     <meta name="twitter:card" content="summary_large_image">
 
     <style>
-        /* モダンミニマル・プレミアムテーマ：ダイナミック・アンビエントオーロラ */
+        /* 最新のCSS機能で座標を数値として定義（これにより100%シームレスに動きます） */
+        @property --x1 { syntax: '<percentage>'; inherits: false; initial-value: 30%; }
+        @property --y1 { syntax: '<percentage>'; inherits: false; initial-value: -10%; }
+        @property --x2 { syntax: '<percentage>'; inherits: false; initial-value: 85%; }
+        @property --y2 { syntax: '<percentage>'; inherits: false; initial-value: 85%; }
+        @property --x3 { syntax: '<percentage>'; inherits: false; initial-value: 10%; }
+        @property --y3 { syntax: '<percentage>'; inherits: false; initial-value: 50%; }
+
+        /* モダンミニマル・プレミアムテーマ：完全シームレス・アンビエントオーロラ */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: #080a0f;
@@ -30,39 +39,37 @@
             position: relative;
             overflow-x: hidden;
             
-            /* 背景グラデーションのサイズを大きく確保して、動かしたときの切れ目を防ぐ */
-            background-size: 140% 140%;
-            background-position: center;
+            /* 定義した数値型のカスタムプロパティをグラデーションに適用 */
+            background-image: 
+                radial-gradient(circle at var(--x1) var(--y1), #1c264f 0%, transparent 65%),
+                radial-gradient(circle at var(--x2) var(--y2), #060b1c 0%, transparent 60%),
+                radial-gradient(circle at var(--x3) var(--y3), #1c153d 0%, transparent 55%);
             
-            /* 大胆に動くオーロラアニメーション (16秒でドラマチックにループ) */
-            animation: dynamicAurora 16s ease-in-out infinite alternate;
+            /* 18秒かけて、カクつきを一切排除したリニアで極上のうねりを実現 */
+            animation: seamlessAurora 18s ease-in-out infinite alternate;
         }
 
-        /* 大胆にうねる光のアニメーション（4ポジションをスムーズに遷移） */
-        @keyframes dynamicAurora {
+        /* 座標（数値）だけを変化させることで、ブラウザが滑らかなコマ送りを自動生成 */
+        @keyframes seamlessAurora {
             0% {
-                background-image: 
-                    radial-gradient(circle at 30% -10%, #1c264f 0%, transparent 65%),
-                    radial-gradient(circle at 85% 85%, #0a1126 0%, transparent 60%),
-                    radial-gradient(circle at 10% 50%, #13122c 0%, transparent 50%);
+                --x1: 20%;  --y1: -10%;
+                --x2: 85%;  --y2: 85%;
+                --x3: 10%;  --y3: 50%;
             }
             33% {
-                background-image: 
-                    radial-gradient(circle at 75% -20%, #262f63 0%, transparent 70%),
-                    radial-gradient(circle at 15% 95%, #060b1c 0%, transparent 55%),
-                    radial-gradient(circle at 90% 40%, #1c153d 0%, transparent 45%);
+                --x1: 75%;  --y1: -20%;
+                --x2: 25%;  --y2: 90%;
+                --x3: 90%;  --y3: 30%;
             }
             66% {
-                background-image: 
-                    radial-gradient(circle at 50% 110%, #202b5c 0%, transparent 65%),
-                    radial-gradient(circle at 15% -15%, #08102b 0%, transparent 60%),
-                    radial-gradient(circle at 80% 80%, #22143b 0%, transparent 50%);
+                --x1: 50%;  --y1: 105%;
+                --x2: 15%;  --y2: -15%;
+                --x3: 80%;  --y3: 75%;
             }
             100% {
-                background-image: 
-                    radial-gradient(circle at 20% 120%, #171f42 0%, transparent 60%),
-                    radial-gradient(circle at 90% -10%, #2b3875 0%, transparent 75%),
-                    radial-gradient(circle at 30% 20%, #161135 0%, transparent 55%);
+                --x1: 15%;  --y1: 95%;
+                --x2: 85%;  --y2: -10%;
+                --x3: 35%;  --y3: 15%;
             }
         }
 
@@ -71,7 +78,7 @@
             content: "";
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3filter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.015'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.015'/%3E%3C/svg%3E");
             pointer-events: none;
             z-index: 1;
         }
