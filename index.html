@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Immersive Circle of Fifths</title>
     
-    <!-- SNSシェア用の設定 (OGP) -->
     <meta property="og:url" content="https://dara-dara-bouka.github.io/immersive-circle-of-fifths/">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Immersive Circle of Fifths">
@@ -348,7 +347,8 @@
             "major": ["Ionian", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian"],
             "melodic-minor": ["Melodic Minor", "Dorian ♭2", "Lydian Augmented", "Lydian Dominant", "Mixolydian ♭6", "Locrian ♮2", "Altered / Super Locrian"],
             "harmonic-minor": ["Harmonic Minor", "Locrian ♮6", "Ionian Augmented", "Dorian ♯4", "Phrygian Dominant", "Lydian ♯2", "Ultralocrian / Altered 𝄫7"],
-            "harmonic-major": ["Harmonic Major", "Dorian ♭5", "Locrian ♭2", "Lydian ♭3", "Mixolydian ♭2", "Lydian Augmented ♯2", "Locrian 𝄫7"]
+            // 🚀 FIXED: 3番目の要素を "Locrian ♭2" から "Phrygian ♭4" へ完全に修正しました！
+            "harmonic-major": ["Harmonic Major", "Dorian ♭5", "Phrygian ♭4", "Lydian ♭3", "Mixolydian ♭2", "Lydian Augmented ♯2", "Locrian 𝄫7"]
         };
 
         let audioCtx = null;
@@ -511,7 +511,7 @@
             if (quality === "m7")       return "#2563eb";      
             if (quality.includes("(M7)")) return "#7c3aed";    
             if (quality.includes("♭5")) return "#16a34a";      
-            if (quality.includes("dim7")) return "#4c1d95";    
+            if (quality.includes("dim7")) return "#580242";    // 🟪 FIXED: わかりやすい濃い赤紫に変更
             return "#4b5563";
         }
 
