@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Immersive Circle of Fifths</title>
     
+    <!-- SNSシェア用の設定 (OGP) -->
     <meta property="og:url" content="https://dara-dara-bouka.github.io/immersive-circle-of-fifths/">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Immersive Circle of Fifths">
@@ -36,8 +37,9 @@
             margin-bottom: 15px;
             display: flex;
             gap: 10px;
+            align-items: center;
         }
-        select {
+        select, button.toggle-enharmonic {
             padding: 10px 15px;
             font-size: 16px;
             background-color: #222;
@@ -45,9 +47,13 @@
             border: 1px solid #444;
             border-radius: 5px;
             cursor: pointer;
-            transition: border-color 0.2s;
+            transition: all 0.2s;
         }
         select:focus { border-color: #4df3a9; }
+        button.toggle-enharmonic:hover {
+            border-color: #4df3a9;
+            color: #4df3a9;
+        }
 
         svg { margin: 10px 0; }
         
@@ -155,6 +161,7 @@
             <option value="harmonic-minor">3. Harmonic Minor</option>
             <option value="harmonic-major">4. Harmonic Major</option>
         </select>
+        <button id="enharmonic-toggle" class="toggle-enharmonic" style="display:none;">⇄ Switch ♯ / ♭</button>
     </div>
     
     <svg width="440" height="440" viewBox="-220 -220 440 440" id="circle"></svg>
@@ -171,13 +178,19 @@
         const chromatic = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
         const circleOfFifths = ["C", "G", "D", "A", "E", "B", "F#/Gb", "C#/Db", "G#/Ab", "D#/Eb", "A#/Bb", "F"];
 
+        // 内部処理用のデフォルトマッピング
         const displayToInternal = {
             "C": "C", "G": "G", "D": "D", "A": "A", "E": "E", "B": "B", "F": "F",
             "F#/Gb": "Gb", "C#/Db": "Db", "G#/Ab": "Ab", "D#/Eb": "Eb", "A#/Bb": "Bb"
         };
-        const internalToDisplay = {
-            "C": "C", "Db": "C#/Db", "D": "D", "Eb": "D#/Eb", "E": "E", "F": "F",
-            "Gb": "F#/Gb", "G": "G", "Ab": "G#/Ab", "A": "A", "Bb": "A#/Bb", "B": "B"
+
+        // 異名同音（シャープ系・フラット系）のペア定義
+        const enharmonicPairs = {
+            "Gb": "F#", "F#": "Gb",
+            "Db": "C#", "C#": "Db",
+            "Ab": "G#", "G#": "Ab",
+            "Eb": "D#", "D#": "Eb",
+            "Bb": "A#", "A#": "Bb"
         };
 
         const scaleIntervals = {
@@ -197,52 +210,46 @@
         let audioCtx = null;
         const noteFreqs = {
             "C": 261.63, "Db": 277.18, "D": 293.66, "Eb": 311.13, "E": 329.63, "F": 349.23,
-            "Gb": 369.99, "G": 392.00, "Ab": 415.30, "A": 440.00, "Bb": 466.16, "B": 493.88
+            "Gb": 369.99, "G": 392.00, "Ab": 415.30, "A": 440.00, "Bb": 466.16, "B": 493.88,
+            "F#": 369.99, "C#": 277.18, "G#": 415.30, "D#": 311.13, "A#": 466.16
         };
 
-        let currentSelectedRoot = null;
+        let currentSelectedRoot = null; // 現在の内部ルート音 (例: "Eb" または "D#")
+        let currentRotationIndex = 0;
 
-        // 各アルファベットの「基準（変化記号なし）の半音位置」
         const baseNotePositions = { "C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11 };
         const alphabetList = ["C", "D", "E", "F", "G", "A", "B"];
 
-        // 五度圏のルート音に対して、理論的に正当な「開始アルファベット」を固定定義
-        const rootLetterSpecs = {
-            "C": "C", "G": "G", "D": "D", "A": "A", "E": "E", "B": "B",
-            "Gb": "G", // F#として扱う場合はFだが、ここではGbとして扱うためG
-            "Db": "D", "Ab": "A", "Eb": "E", "Bb": "B", "F": "F"
-        };
+        // ルート音文字列から、その「開始アルファベット」を厳密に抽出する
+        function getRootLetter(rootNote) {
+            return rootNote.charAt(0);
+        }
 
-        // ★究極の音楽理論ロジック：CDEFGABを重複なく確定させ、変化記号を自動計算する
+        // ★完全自動・重複なし音楽理論ラベル生成ロジック
         function calculatePerfectScaleLabels(notesArray, rootNote) {
-            // 1. 開始すべきアルファベットを決定
-            let startLetter = rootLetterSpecs[rootNote] || "C";
+            let startLetter = getRootLetter(rootNote);
             let currentLetterIdx = alphabetList.indexOf(startLetter);
 
             return notesArray.map((internalNote) => {
-                // 2. この音階のステップで割り当てるべきアルファベット（CDEFGABのどれか）
                 const targetLetter = alphabetList[currentLetterIdx];
-                
-                // 3. 内部的な半音インデックス（0〜11）を取得
-                const internalIdx = chromatic.indexOf(internalNote);
-                // 4. 目標とするアルファベットの、変化記号なし状態の基準位置
+                const internalIdx = chromatic.indexOf(internalNote === "F#" ? "Gb" : 
+                                                    internalNote === "C#" ? "Db" : 
+                                                    internalNote === "G#" ? "Ab" : 
+                                                    internalNote === "D#" ? "Eb" : 
+                                                    internalNote === "A#" ? "Bb" : internalNote);
                 const baseIdx = baseNotePositions[targetLetter];
 
-                // 5. 基準位置から半音いくつ分ズレているかを計算（最短距離で-2〜+2を出す）
                 let diff = internalIdx - baseIdx;
                 if (diff > 6) diff -= 12;
                 if (diff < -6) diff += 12;
 
-                // 6. ズレ（diff）に応じて最適な音楽記号を付与
                 let accidental = "";
                 if (diff === 1) accidental = "♯";
-                else if (diff === 2) accidental = "𝄪"; // ダブルシャープ
+                else if (diff === 2) accidental = "𝄪"; 
                 else if (diff === -1) accidental = "♭";
-                else if (diff === -2) accidental = "𝄫"; // ダブルフラット
+                else if (diff === -2) accidental = "𝄫"; 
 
-                // 次のノートのためにアルファベットを1つ進める
                 currentLetterIdx = (currentLetterIdx + 1) % 7;
-
                 return targetLetter + accidental;
             });
         }
@@ -250,13 +257,15 @@
         function playNotes(chordNotes) {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const now = audioCtx.currentTime;
-            const rootFreq = noteFreqs[chordNotes[0]];
+            
+            const cleanNotes = chordNotes.map(n => n === "F#" ? "Gb" : n === "C#" ? "Db" : n === "G#" ? "Ab" : n === "D#" ? "Eb" : n === "A#" ? "Bb" : n);
+            const rootFreq = noteFreqs[cleanNotes[0]];
 
             const masterGain = audioCtx.createGain();
             masterGain.gain.setValueAtTime(0.3, now);
             masterGain.connect(audioCtx.destination);
 
-            chordNotes.forEach((noteName, index) => {
+            cleanNotes.forEach((noteName, index) => {
                 let freq = noteFreqs[noteName];
                 if (index === 0) freq /= 2; 
                 if (index > 0 && freq < rootFreq) freq *= 2;
@@ -293,10 +302,14 @@
         function playSingleNote(noteName, index, isLast, referenceRoot) {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const playTime = audioCtx.currentTime;
-            let freq = noteFreqs[noteName];
+            
+            const cleanNote = noteName === "F#" ? "Gb" : noteName === "C#" ? "Db" : noteName === "G#" ? "Ab" : noteName === "D#" ? "Eb" : noteName === "A#" ? "Bb" : noteName;
+            const cleanRoot = referenceRoot === "F#" ? "Gb" : referenceRoot === "C#" ? "Db" : referenceRoot === "G#" ? "Ab" : referenceRoot === "D#" ? "Eb" : referenceRoot === "A#" ? "Bb" : referenceRoot;
+            
+            let freq = noteFreqs[cleanNote];
 
-            if (index > 0 && freq < noteFreqs[referenceRoot]) freq *= 2;
-            if (isLast) freq = noteFreqs[referenceRoot] * 2; 
+            if (index > 0 && freq < noteFreqs[cleanRoot]) freq *= 2;
+            if (isLast) freq = noteFreqs[cleanRoot] * 2; 
 
             const osc = audioCtx.createOscillator();
             const gain = audioCtx.createGain();
@@ -324,29 +337,26 @@
         }
 
         function getChordQuality(root, third, fifth, seventh) {
-            const rIdx = chromatic.indexOf(root);
-            const t3 = (chromatic.indexOf(third) - rIdx + 12) % 12;
-            const t5 = (chromatic.indexOf(fifth) - rIdx + 12) % 12;
-            const t7 = (chromatic.indexOf(seventh) - rIdx + 12) % 12;
+            const toIdx = (n) => chromatic.indexOf(n === "F#" ? "Gb" : n === "C#" ? "Db" : n === "G#" ? "Ab" : n === "D#" ? "Eb" : n === "A#" ? "Bb" : n);
+            const rIdx = toIdx(root);
+            const t3 = (toIdx(third) - rIdx + 12) % 12;
+            const t5 = (toIdx(fifth) - rIdx + 12) % 12;
+            const t7 = (toIdx(seventh) - rIdx + 12) % 12;
 
             if (t3 === 4 && t5 === 7 && t7 === 11) return "M7";
             if (t3 === 4 && t5 === 7 && t7 === 10) return "7";
             if (t3 === 3 && t5 === 7 && t7 === 10) return "m7";
             if (t3 === 3 && t5 === 6 && t7 === 10) return "m7♭5";
             if (t3 === 3 && t5 === 6 && t7 === 9)  return "dim7";
-            
             if (t3 === 4 && t5 === 8 && t7 === 11) return "augM7";
             if (t3 === 4 && t5 === 8 && t7 === 10) return "7#5";
-            
             if (t3 === 3 && t5 === 7 && t7 === 11) return "m(M7)";
-            
             if (t3 === 4 && t5 === 6 && t7 === 10) return "7♭5";
             if (t3 === 4 && t5 === 6 && t7 === 11) return "M7♭5";
             if (t3 === 3 && t5 === 6 && t7 === 11) return "m(M7)♭5";
 
             if (t5 === 8) return "augM7"; 
             if (t5 === 6) return "m7♭5";   
-            
             return "m7"; 
         }
 
@@ -365,6 +375,7 @@
 
         const svg = document.getElementById('circle');
         const scaleSelect = document.getElementById('scale-select');
+        const enharmonicToggle = document.getElementById('enharmonic-toggle');
         const info = document.getElementById('info');
         const modesArea = document.getElementById('modes-area');
         const chordArea = document.getElementById('chord-area');
@@ -434,12 +445,22 @@
             svg.appendChild(qText);
 
             pathOuter.addEventListener('click', () => {
-                currentSelectedRoot = internalNote;
-                renderModalUniverse(0); 
+                currentSelectedRoot = internalNote; // "Gb", "Db", "Ab", "Eb", "Bb" など
+                currentRotationIndex = 0;
+                renderModalUniverse(currentRotationIndex); 
             });
         });
 
+        // 異名同音切り替えボタンのイベント
+        enharmonicToggle.addEventListener('click', () => {
+            if (currentSelectedRoot && enharmonicPairs[currentSelectedRoot]) {
+                currentSelectedRoot = enharmonicPairs[currentSelectedRoot];
+                renderModalUniverse(currentRotationIndex);
+            }
+        });
+
         function renderModalUniverse(modeRotationIndex) {
+            currentRotationIndex = modeRotationIndex;
             const currentParentScale = scaleSelect.value;
             const intervals = scaleIntervals[currentParentScale];
             
@@ -447,11 +468,36 @@
             document.getElementById('modes-title').style.display = 'block';
             document.getElementById('chords-title').style.display = 'block';
 
-            let currentChromaticIdx = chromatic.indexOf(currentSelectedRoot);
-            const parentScaleNotes = [chromatic[currentChromaticIdx]];
+            // 異名同音切り替えボタンを表示するかどうか
+            const baseLookup = currentSelectedRoot.replace("#", "").replace("b", "");
+            const hasEnharmonic = enharmonicPairs[currentSelectedRoot] !== undefined;
+            enharmonicToggle.style.display = hasEnharmonic ? 'inline-block' : 'none';
+
+            // ルート音の半音位置
+            const cleanRootForIndex = currentSelectedRoot === "F#" ? "Gb" : 
+                                      currentSelectedRoot === "C#" ? "Db" : 
+                                      currentSelectedRoot === "G#" ? "Ab" : 
+                                      currentSelectedRoot === "D#" ? "Eb" : 
+                                      currentSelectedRoot === "A#" ? "Bb" : currentSelectedRoot;
+            
+            let currentChromaticIdx = chromatic.indexOf(cleanRootForIndex);
+            
+            // 親スケールのノート配列（内部名）を作成。シャープ系ならシャープ名で保持
+            const isSharpRoot = currentSelectedRoot.includes("#");
+            
+            const parentScaleNotes = [currentSelectedRoot];
             for(let j = 0; j < 6; j++) {
                 currentChromaticIdx = (currentChromaticIdx + intervals[j]) % 12;
-                parentScaleNotes.push(chromatic[currentChromaticIdx]);
+                let nextNote = chromatic[currentChromaticIdx];
+                // ルートがシャープ系なら、異名同音が存在するノートはシャープ名に変える
+                if (isSharpRoot) {
+                    if (nextNote === "Db") nextNote = "C#";
+                    if (nextNote === "Eb") nextNote = "D#";
+                    if (nextNote === "Gb") nextNote = "F#";
+                    if (nextNote === "Ab") nextNote = "G#";
+                    if (nextNote === "Bb") nextNote = "A#";
+                }
+                parentScaleNotes.push(nextNote);
             }
 
             const modalScaleNotes = [];
@@ -469,6 +515,7 @@
             }
             const modalRootLabel = modalSmartLabels[0];
 
+            // 五度圏ホイールのビジュアル更新
             circleOfFifths.forEach(dn => {
                 const inote = displayToInternal[dn];
                 const pOuter = document.getElementById(`path-${inote}`);
@@ -496,15 +543,17 @@
                 const displayRoot = modalSmartLabels[deg];
                 diatonicChords.push({ root: r, notes: [r, t, f, s], label: displayRoot + quality, quality: quality });
 
-                const qElement = document.getElementById(`quality-${r}`);
+                // ホイール上の該当するノート（フラット版のID）を取得して表示
+                const cleanR = r === "F#" ? "Gb" : r === "C#" ? "Db" : r === "G#" ? "Ab" : r === "D#" ? "Eb" : r === "A#" ? "Bb" : r;
+                const qElement = document.getElementById(`quality-${cleanR}`);
                 if (qElement) {
                     qElement.textContent = quality; 
                     qElement.classList.add('show');
                 }
 
-                const targetOuterPath = document.getElementById(`path-${r}`);
-                const targetInnerPath = document.getElementById(`quality-path-${r}`);
-                const targetText = document.getElementById(`text-${r}`);
+                const targetOuterPath = document.getElementById(`path-${cleanR}`);
+                const targetInnerPath = document.getElementById(`quality-path-${cleanR}`);
+                const targetText = document.getElementById(`text-${cleanR}`);
                 
                 if(targetOuterPath) {
                     targetOuterPath.style.fill = targetOuterPath.dataset.activeFill;
@@ -519,6 +568,7 @@
                 if(targetText) targetText.classList.remove('dimmed-text');
             }
 
+            // 音を鳴らす
             const arpeggioNotes = [...modalScaleNotes, modalScaleNotes[0]];
             arpeggioNotes.forEach((noteName, index) => {
                 setTimeout(() => {
@@ -560,16 +610,21 @@
         }
 
         scaleSelect.addEventListener('change', () => {
-            document.querySelectorAll('path.outer-note-sector').forEach(p => p.style.fill = p.dataset.defaultFill);
-            document.querySelectorAll('path.inner-quality-sector').forEach(p => p.style.fill = "#1a1a1a");
-            document.querySelectorAll('text.note-label').forEach(t => t.classList.remove('dimmed-text'));
-            document.querySelectorAll('.quality-label').forEach(q => { q.classList.remove('show'); q.textContent = ""; });
-            modesArea.innerHTML = ""; chordArea.innerHTML = "";
-            document.getElementById('modes-title').style.display = 'none';
-            document.getElementById('chords-title').style.display = 'none';
-            info.style.color = "#888888";
-            info.textContent = "Select a Parent Scale, then click a note on the wheel to begin.";
-            currentSelectedRoot = null;
+            if (currentSelectedRoot) {
+                renderModalUniverse(0);
+            } else {
+                document.querySelectorAll('path.outer-note-sector').forEach(p => p.style.fill = p.dataset.defaultFill);
+                document.querySelectorAll('path.inner-quality-sector').forEach(p => p.style.fill = "#1a1a1a");
+                document.querySelectorAll('text.note-label').forEach(t => t.classList.remove('dimmed-text'));
+                document.querySelectorAll('.quality-label').forEach(q => { q.classList.remove('show'); q.textContent = ""; });
+                modesArea.innerHTML = ""; chordArea.innerHTML = "";
+                document.getElementById('modes-title').style.display = 'none';
+                document.getElementById('chords-title').style.display = 'none';
+                enharmonicToggle.style.display = 'none';
+                info.style.color = "#888888";
+                info.textContent = "Select a Parent Scale, then click a note on the wheel to begin.";
+                currentSelectedRoot = null;
+            }
         });
     </script>
 </body>
