@@ -469,9 +469,9 @@
                         const elB = document.getElementById(modeB.id);
                         
                         const x1 = elA.offsetLeft + 105;
-                        const y1 = elA.offsetTop + (elA.offsetHeight / 2);
+                        const y1 = elA.offsetTop + (elA.offsetHeight / 2 || 27); // 読み込み未完了時のデフォルト高さをケア
                         const x2 = elB.offsetLeft + 105;
-                        const y2 = elB.offsetTop + (elB.offsetHeight / 2);
+                        const y2 = elB.offsetTop + (elB.offsetHeight / 2 || 27);
 
                         const colorA = getColorCode(modeA.chord);
                         const colorB = getColorCode(modeB.chord);
@@ -495,7 +495,7 @@
                             svg.appendChild(line1);
 
                             const line2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                            line2.setAttribute("x1", x1); line1.setAttribute("y1", y1); 
+                            line2.setAttribute("x1", x1); line2.setAttribute("y1", y1); // 🛠️ line1になっていたタイポをline2に修正！
                             line2.setAttribute("x2", x2); line2.setAttribute("y2", y2);
                             line2.setAttribute("stroke", colorB);
                             line2.setAttribute("stroke-width", "2.5");
