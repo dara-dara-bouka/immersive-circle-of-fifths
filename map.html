@@ -184,7 +184,7 @@
             align-items: flex-start;
         }
 
-        /* 起点を top left に変更し、縮小時の左右見切れを防止 */
+        /* 起点を top left に固定し縮小 */
         .map-wrapper {
             position: absolute;
             top: 0;
@@ -256,7 +256,7 @@
         .mode-degrees { font-size: 11px; letter-spacing: 0.5px; color: rgba(255,255,255,0.85); margin-bottom: 5px; white-space: nowrap; font-weight: 400;}
         .mode-parent { font-size: 9px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 1px; font-weight: 600;}
 
-        /* PCでの凡例デザイン */
+        /* PCでの凡例（通常表示） */
         .legend {
             position: fixed;
             bottom: 20px;
@@ -274,25 +274,45 @@
             gap: 6px;
             box-shadow: 0 8px 25px rgba(0,0,0,0.5);
         }
+        .legend-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
         .legend-item { display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.7);}
-        .legend-color { width: 12px; height: 12px; border-radius: 3px; }
+        .legend-color { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
 
-        /* 🛠️ スマホ画面（幅768px以下）で表が大きく邪魔にならないようコンパクト化 */
+        /* 🛠️ スマホ画面（幅768px以下）で2列グリッドにして超コンパクト化 */
         @media (max-width: 768px) {
             .legend { 
-                padding: 8px 10px; 
-                font-size: 10px; 
-                bottom: 15px; 
-                left: 15px; 
-                max-width: 100px;
-                gap: 4px;
+                padding: 6px 8px; 
+                bottom: 12px; 
+                left: 12px; 
+                max-width: 135px; /* 横幅を最適化 */
+                gap: 2px;
+                background: rgba(8, 3, 6, 0.95);
             }
-            .legend div:first-child {
-                font-size: 10px !important;
+            .legend-title {
+                font-size: 9px !important;
+                letter-spacing: 0px !important;
                 margin-bottom: 2px !important;
+                opacity: 0.5;
             }
-            .legend-item { gap: 6px; }
-            .legend-color { width: 9px; height: 9px; border-radius: 2px; }
+            /* 縦並びから2列のグリッド配置に変更 */
+            .legend-list {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 3px 6px;
+            }
+            .legend-item { 
+                font-size: 9px; 
+                gap: 4px; 
+            }
+            .legend-color { 
+                width: 7px; 
+                height: 7px; 
+                border-radius: 1px; 
+            }
         }
 
         .fade-overlay {
@@ -336,14 +356,16 @@
     </div>
 
     <div class="legend">
-        <div style="font-weight: 600; margin-bottom: 4px; color: #fff; letter-spacing: 0.5px;">Chord Colors (Ⅰ)</div>
-        <div class="legend-item"><div class="legend-color" style="background:var(--color-M7);"></div>M7</div>
-        <div class="legend-item"><div class="legend-color" style="background:var(--color-augM7);"></div>augM7</div>
-        <div class="legend-item"><div class="legend-color" style="background:var(--color-7);"></div>7</div>
-        <div class="legend-item"><div class="legend-color" style="background:var(--color-m7b5);"></div>m7♭5</div>
-        <div class="legend-item"><div class="legend-color" style="background:var(--color-m7);"></div>m7</div>
-        <div class="legend-item"><div class="legend-color" style="background:var(--color-mM7);"></div>m(M7)</div>
-        <div class="legend-item"><div class="legend-color" style="background:var(--color-dim7);"></div>dim7</div>
+        <div class="legend-title" style="font-weight: 600; margin-bottom: 4px; color: #fff; letter-spacing: 0.5px;">Chord Colors (Ⅰ)</div>
+        <div class="legend-list">
+            <div class="legend-item"><div class="legend-color" style="background:var(--color-M7);"></div>M7</div>
+            <div class="legend-item"><div class="legend-color" style="background:var(--color-augM7);"></div>augM7</div>
+            <div class="legend-item"><div class="legend-color" style="background:var(--color-7);"></div>7</div>
+            <div class="legend-item"><div class="legend-color" style="background:var(--color-m7b5);"></div>m7♭5</div>
+            <div class="legend-item"><div class="legend-color" style="background:var(--color-m7);"></div>m7</div>
+            <div class="legend-item"><div class="legend-color" style="background:var(--color-mM7);"></div>m(M7)</div>
+            <div class="legend-item"><div class="legend-color" style="background:var(--color-dim7);"></div>dim7</div>
+        </div>
     </div>
 
     <script>
@@ -389,7 +411,6 @@
         const wrapper = document.getElementById("mapWrapper");
         const shield = document.getElementById("mapShield");
 
-        // スマホの画面幅に合わせて全体のスケールを動的に計算・枠をセンタリングする処理
         function handleResponsiveScale() {
             const container = document.querySelector('.map-container');
             const windowWidth = container.clientWidth;
@@ -397,8 +418,6 @@
             if (windowWidth < 1400) {
                 const scale = windowWidth / 1400;
                 wrapper.style.transform = `scale(${scale})`;
-                
-                // 盾（シールド）自体の物理サイズを縮小後の大きさに固定し、親のflex centerで中央に配置する
                 shield.style.width = `${1400 * scale}px`;
                 shield.style.height = `${1450 * scale}px`;
             } else {
@@ -489,7 +508,6 @@
                 const pageX = e.pageX || e.touches[0].pageX;
                 const pageY = e.pageY || e.touches[0].pageY;
 
-                // スマホ縮小中のドラッグ座標のズレを計算で修正
                 const container = document.querySelector('.map-container');
                 const scale = container.clientWidth < 1400 ? container.clientWidth / 1400 : 1;
 
