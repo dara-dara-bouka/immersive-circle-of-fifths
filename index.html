@@ -202,60 +202,49 @@
 
         let currentSelectedRoot = null;
 
-        // ★ロジック大幅強化：ルート音の調性（♯系か♭系か）に応じて、正しく文字列をマッピングする
-        function getSmartScaleLabels(notesArray, rootNote, startAlphabetIndex) {
-            const alphabets = ["A", "B", "C", "D", "E", "F", "G"];
-            
-            // ♭系（フラットベース）にするキーのリスト
-            const flatKeys = ["F", "Bb", "Eb", "Ab", "Db", "Gb"];
-            const isFlatKey = flatKeys.includes(rootNote);
+        // 各アルファベットの「基準（変化記号なし）の半音位置」
+        const baseNotePositions = { "C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11 };
+        const alphabetList = ["C", "D", "E", "F", "G", "A", "B"];
 
-            const spellings = {
-                "C":  { normal: "C",  flatPrefer: "C",   sharpPrefer: "B♯" },
-                "Db": { normal: "D♭", flatPrefer: "D♭",  sharpPrefer: "C♯" },
-                "D":  { normal: "D",  flatPrefer: "D",   sharpPrefer: "D" },
-                "Eb": { normal: "E♭", flatPrefer: "E♭",  sharpPrefer: "D♯" },
-                "E":  { normal: "E",  flatPrefer: "F♭",  sharpPrefer: "E" },
-                "F":  { normal: "F",  flatPrefer: "F",   sharpPrefer: "E♯" },
-                "Gb": { normal: "G♭", flatPrefer: "G♭",  sharpPrefer: "F♯" },
-                "G":  { normal: "G",  flatPrefer: "G",   sharpPrefer: "G" },
-                "Ab": { normal: "A♭", flatPrefer: "A♭",  sharpPrefer: "G♯" },
-                "A":  { normal: "A",  flatPrefer: "A",   sharpPrefer: "A" },
-                "Bb": { normal: "B♭", flatPrefer: "B♭",  sharpPrefer: "A♯" },
-                "B":  { normal: "B",  flatPrefer: "C♭",  sharpPrefer: "B" }
-            };
+        // 五度圏のルート音に対して、理論的に正当な「開始アルファベット」を固定定義
+        const rootLetterSpecs = {
+            "C": "C", "G": "G", "D": "D", "A": "A", "E": "E", "B": "B",
+            "Gb": "G", // F#として扱う場合はFだが、ここではGbとして扱うためG
+            "Db": "D", "Ab": "A", "Eb": "E", "Bb": "B", "F": "F"
+        };
 
-            let currentLetterIdx = startAlphabetIndex;
+        // ★究極の音楽理論ロジック：CDEFGABを重複なく確定させ、変化記号を自動計算する
+        function calculatePerfectScaleLabels(notesArray, rootNote) {
+            // 1. 開始すべきアルファベットを決定
+            let startLetter = rootLetterSpecs[rootNote] || "C";
+            let currentLetterIdx = alphabetList.indexOf(startLetter);
+
             return notesArray.map((internalNote) => {
-                const targetLetter = alphabets[currentLetterIdx];
-                const opts = spellings[internalNote];
+                // 2. この音階のステップで割り当てるべきアルファベット（CDEFGABのどれか）
+                const targetLetter = alphabetList[currentLetterIdx];
                 
-                // 基本方針の決定
-                let chosen = isFlatKey ? opts.flatPrefer : opts.sharpPrefer;
+                // 3. 内部的な半音インデックス（0〜11）を取得
+                const internalIdx = chromatic.indexOf(internalNote);
+                // 4. 目標とするアルファベットの、変化記号なし状態の基準位置
+                const baseIdx = baseNotePositions[targetLetter];
 
-                // もし選んだ文字がターゲットのアルファベットと合致しない場合、もう一方の候補でアルファベットが合うかチェック
-                if (!chosen.startsWith(targetLetter)) {
-                    if (opts.flatPrefer.startsWith(targetLetter)) chosen = opts.flatPrefer;
-                    else if (opts.sharpPrefer.startsWith(targetLetter)) chosen = opts.sharpPrefer;
-                    else if (opts.normal.startsWith(targetLetter)) chosen = opts.normal;
-                }
-                
+                // 5. 基準位置から半音いくつ分ズレているかを計算（最短距離で-2〜+2を出す）
+                let diff = internalIdx - baseIdx;
+                if (diff > 6) diff -= 12;
+                if (diff < -6) diff += 12;
+
+                // 6. ズレ（diff）に応じて最適な音楽記号を付与
+                let accidental = "";
+                if (diff === 1) accidental = "♯";
+                else if (diff === 2) accidental = "𝄪"; // ダブルシャープ
+                else if (diff === -1) accidental = "♭";
+                else if (diff === -2) accidental = "𝄫"; // ダブルフラット
+
+                // 次のノートのためにアルファベットを1つ進める
                 currentLetterIdx = (currentLetterIdx + 1) % 7;
-                return chosen;
-            });
-        }
 
-        // ルート音から最初のアルファベットのインデックスを特定する（A=0, B=1, C=2...）
-        function getAlphabetIndexFromNote(internalNote, rootNote) {
-            const flatKeys = ["F", "Bb", "Eb", "Ab", "Db", "Gb"];
-            let disp = internalToDisplay[internalNote];
-            
-            // キーに応じて初期表示文字をマッピング
-            if (disp.includes('/')) {
-                disp = flatKeys.includes(rootNote) ? disp.split('/')[1] : disp.split('/')[0];
-            }
-            const firstChar = disp.charAt(0);
-            return ["A", "B", "C", "D", "E", "F", "G"].indexOf(firstChar);
+                return targetLetter + accidental;
+            });
         }
 
         function playNotes(chordNotes) {
@@ -471,9 +460,8 @@
             }
             const modalRoot = modalScaleNotes[0];
 
-            // ★ 選択したルート音（主音）基準で、♯/♭系を最適に判断してラベル生成
-            const parentAlphabetStartIdx = getAlphabetIndexFromNote(currentSelectedRoot, currentSelectedRoot);
-            const parentSmartLabels = getSmartScaleLabels(parentScaleNotes, currentSelectedRoot, parentAlphabetStartIdx);
+            // ★ 新ロジックによる重複のない「完璧な理論表記」ラベル配列の生成
+            const parentSmartLabels = calculatePerfectScaleLabels(parentScaleNotes, currentSelectedRoot);
             
             const modalSmartLabels = [];
             for (let i = 0; i < 7; i++) {
