@@ -52,26 +52,10 @@
         }
 
         @keyframes seamlessAurora {
-            0% {
-                --x1: 20%;  --y1: -10%;
-                --x2: 85%;  --y2: 85%;
-                --x3: 10%;  --y3: 50%;
-            }
-            33% {
-                --x1: 75%;  --y1: -20%;
-                --x2: 25%;  --y2: 90%;
-                --x3: 90%;  --y3: 30%;
-            }
-            66% {
-                --x1: 50%;  --y1: 105%;
-                --x2: 15%;  --y2: -15%;
-                --x3: 80%;  --y3: 75%;
-            }
-            100% {
-                --x1: 15%;  --y1: 95%;
-                --x2: 85%;  --y2: -10%;
-                --x3: 35%;  --y3: 15%;
-            }
+            0% { --x1: 20%;  --y1: -10%; --x2: 85%;  --y2: 85%; --x3: 10%;  --y3: 50%; }
+            33% { --x1: 75%;  --y1: -20%; --x2: 25%;  --y2: 90%; --x3: 90%;  --y3: 30%; }
+            66% { --x1: 50%;  --y1: 105%; --x2: 15%;  --y2: -15%; --x3: 80%;  --y3: 75%; }
+            100% { --x1: 15%;  --y1: 95%; --x2: 85%;  --y2: -10%; --x3: 35%;  --y3: 15%; }
         }
 
         body::before {
@@ -83,7 +67,7 @@
             z-index: 1;
         }
 
-        h1, p, .controls, .map-wrapper, .legend, .nav-btn {
+        h1, p, .controls, .map-container, .legend, .nav-btn {
             position: relative;
             z-index: 2;
         }
@@ -97,6 +81,14 @@
             text-align: center;
             text-shadow: 0 4px 15px rgba(0,0,0,0.6);
         }
+        
+        /* タイトルなどのフォントサイズをスマホ用に微調整 */
+        @media (max-width: 768px) {
+            h1 { font-size: 20px; letter-spacing: 2px; margin-top: 40px; }
+            p { font-size: 11px; }
+            .controls { scale: 0.9; }
+        }
+
         p { 
             font-size: 13px; 
             color: rgba(255,255,255,0.6); 
@@ -131,6 +123,10 @@
             background-color: rgba(255, 255, 255, 0.08);
             border-color: rgba(255, 255, 255, 0.2);
             box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .nav-btn { top: 10px; right: 10px; padding: 6px 12px; font-size: 10px; }
         }
 
         .controls {
@@ -170,12 +166,24 @@
             box-shadow: 0 4px 15px rgba(255, 255, 255, 0.12);
         }
 
+        /* 📱 スマホ縮小対応のための「親ラッパー」を新設 */
+        .map-container {
+            width: 100%;
+            max-width: 1400px;
+            overflow: visible;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        /* 🗺️ マップ自体のサイズは維持。狭い時は CSS の「変形」で綺麗に縮小させる */
         .map-wrapper {
             position: relative;
             width: 1400px;
             height: 1450px;
             margin-bottom: 50px;
             user-select: none;
+            transform-origin: top center; /* 中央上部を起点に縮小 */
         }
 
         .column-headers {
@@ -239,11 +247,12 @@
         .mode-degrees { font-size: 11px; letter-spacing: 0.5px; color: rgba(255,255,255,0.85); margin-bottom: 5px; white-space: nowrap; font-weight: 400;}
         .mode-parent { font-size: 9px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 1px; font-weight: 600;}
 
+        /* 凡例をスマホでは画面下部に邪魔にならないよう、またはトグルできるように調整 */
         .legend {
             position: fixed;
             bottom: 20px;
             left: 20px;
-            background: rgba(8, 3, 6, 0.85);
+            background: rgba(8, 3, 6, 0.9);
             border: 1px solid var(--border-alpha);
             padding: 14px;
             border-radius: 10px;
@@ -256,6 +265,13 @@
             gap: 6px;
             box-shadow: 0 8px 25px rgba(0,0,0,0.5);
         }
+        
+        @media (max-width: 768px) {
+            /* スマホの時は左下にコンパクトにまとめるか、重なりを防ぐために少し小さく */
+            .legend { padding: 8px; font-size: 9px; bottom: 10px; left: 10px; max-width: 110px;}
+            .legend-color { width: 8px; height: 8px; }
+        }
+
         .legend-item { display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.7);}
         .legend-color { width: 12px; height: 12px; border-radius: 3px; }
 
@@ -285,15 +301,17 @@
         <button class="btn" id="btn-line" onclick="changeLayout('line')">By Brightness (Tonality Level)</button>
     </div>
 
-    <div class="map-wrapper">
-        <div class="column-headers" id="headers">
-            <div class="col-title">MAJOR</div>
-            <div class="col-title">MELODIC MINOR</div>
-            <div class="col-title">HARMONIC MINOR</div>
-            <div class="col-title">HARMONIC MAJOR</div>
-        </div>
+    <div class="map-container">
+        <div class="map-wrapper" id="mapWrapper">
+            <div class="column-headers" id="headers">
+                <div class="col-title">MAJOR</div>
+                <div class="col-title">MELODIC MINOR</div>
+                <div class="col-title">HARMONIC MINOR</div>
+                <div class="col-title">HARMONIC MAJOR</div>
+            </div>
 
-        <svg id="edge-svg"></svg>
+            <svg id="edge-svg"></svg>
+        </div>
     </div>
 
     <div class="legend">
@@ -347,7 +365,23 @@
         ];
 
         let currentLayout = 'grid';
-        const wrapper = document.querySelector(".map-wrapper");
+        const wrapper = document.getElementById("mapWrapper");
+
+        // 📱 スマホの画面幅に合わせて全体のスケールを動的に計算する処理を追加
+        function handleResponsiveScale() {
+            const container = document.querySelector('.map-container');
+            const windowWidth = container.clientWidth;
+            
+            if (windowWidth < 1400) {
+                const scale = windowWidth / 1400;
+                wrapper.style.transform = `scale(${scale})`;
+                // スケールを下げた分、親要素の下部マージンを調整して空白を相殺する
+                container.style.height = `${1450 * scale}px`;
+            } else {
+                wrapper.style.transform = 'none';
+                container.style.height = 'auto';
+            }
+        }
 
         function getColorCode(chord) {
             const colors = { "M7": "#dc2626", "augM7": "#d97706", "7": "#eab308", "m7♭5": "#16a34a", "m7": "#2563eb", "m(M7)": "#7c3aed", "dim7": "#ca228e" };
@@ -430,8 +464,12 @@
                 const pageX = e.pageX || e.touches[0].pageX;
                 const pageY = e.pageY || e.touches[0].pageY;
 
-                const deltaX = pageX - startX;
-                const deltaY = pageY - startY;
+                // 📱 スマホ縮小中のドラッグ座標のズレを計算で修正
+                const container = document.querySelector('.map-container');
+                const scale = container.clientWidth < 1400 ? container.clientWidth / 1400 : 1;
+
+                const deltaX = (pageX - startX) / scale;
+                const deltaY = (pageY - startY) / scale;
 
                 card.style.left = `${initialLeft + deltaX}px`;
                 card.style.top = `${initialTop + deltaY}px`;
@@ -469,7 +507,7 @@
                         const elB = document.getElementById(modeB.id);
                         
                         const x1 = elA.offsetLeft + 105;
-                        const y1 = elA.offsetTop + (elA.offsetHeight / 2 || 27); // 読み込み未完了時のデフォルト高さをケア
+                        const y1 = elA.offsetTop + (elA.offsetHeight / 2 || 27);
                         const x2 = elB.offsetLeft + 105;
                         const y2 = elB.offsetTop + (elB.offsetHeight / 2 || 27);
 
@@ -495,7 +533,7 @@
                             svg.appendChild(line1);
 
                             const line2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                            line2.setAttribute("x1", x1); line2.setAttribute("y1", y1); // 🛠️ line1になっていたタイポをline2に修正！
+                            line2.setAttribute("x1", x1); line2.setAttribute("y1", y1);
                             line2.setAttribute("x2", x2); line2.setAttribute("y2", y2);
                             line2.setAttribute("stroke", colorB);
                             line2.setAttribute("stroke-width", "2.5");
@@ -547,13 +585,19 @@
             card.addEventListener('transitionend', drawEdges);
         });
 
-        window.addEventListener("load", drawEdges);
-        window.addEventListener("resize", drawEdges);
+        // 📱 起動時とリサイズ時に縮小計算を呼ぶようにイベントを合流
+        window.addEventListener("load", () => {
+            handleResponsiveScale();
+            drawEdges();
+        });
+        window.addEventListener("resize", () => {
+            handleResponsiveScale();
+            drawEdges();
+        });
 
         /* 🎬 フェードイン・アウト用のスクリプト */
         window.addEventListener('DOMContentLoaded', () => {
             const overlay = document.getElementById('fadeOverlay');
-            // ページ表示時にフワッと暗転を解除
             setTimeout(() => {
                 overlay.style.opacity = '0';
             }, 50);
@@ -561,9 +605,9 @@
 
         function navigateWithFade(url) {
             const overlay = document.getElementById('fadeOverlay');
-            overlay.style.opacity = '1'; // 暗転させる
+            overlay.style.opacity = '1';
             setTimeout(() => {
-                window.location.href = url; // 0.4秒後にページ移動
+                window.location.href = url;
             }, 400);
         }
     </script>
