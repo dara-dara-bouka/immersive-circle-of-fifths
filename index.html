@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Immersive Circle of Fifths</title>
+    
+    <meta property="og:url" content="https://dara-dara-bouka.github.io/immersive-circle-of-fifths/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Immersive Circle of Fifths">
+    <meta property="og:description" content="五度圏（Circle of Fifths）を視覚と聴覚で直感的に理解する、インタラクティブな音楽理論ツール。ハーモニック・メジャー等の各種モードやダイアトニックコードに完全対応。">
+    <meta property="og:image" content="https://dara-dara-bouka.github.io/immersive-circle-of-fifths/og-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <style>
+        /* 最新のCSS機能で座標を数値として定義 */
+        @property --x1 { syntax: '<percentage>'; inherits: false; initial-value: 30%; }
+        @property --y1 { syntax: '<percentage>'; inherits: false; initial-value: -10%; }
+        @property --x2 { syntax: '<percentage>'; inherits: false; initial-value: 85%; }
+        @property --y2 { syntax: '<percentage>'; inherits: false; initial-value: 85%; }
+        @property --x3 { syntax: '<percentage>'; inherits: false; initial-value: 10%; }
+        @property --y3 { syntax: '<percentage>'; inherits: false; initial-value: 50%; }
+
+        /* モダンミニマル・プレミアムテーマ：完全シームレス・アンビエントオーロラ */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #080a0f;
+            color: #f0f3f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 30px 20px;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            position: relative;
+            overflow-x: hidden;
+            
+            background-image: 
+                radial-gradient(circle at var(--x1) var(--y1), #1c264f 0%, transparent 65%),
+                radial-gradient(circle at var(--x2) var(--y2), #060b1c 0%, transparent 60%),
+                radial-gradient(circle at var(--x3) var(--y3), #1c153d 0%, transparent 55%);
+            
+            animation: seamlessAurora 18s ease-in-out infinite alternate;
+        }
+
+        @keyframes seamlessAurora {
+            0% { --x1: 20%; --y1: -10%; --x2: 85%; --y2: 85%; --x3: 10%; --y3: 50%; }
+            33% { --x1: 75%; --y1: -20%; --x2: 25%; --y2: 90%; --x3: 90%; --y3: 30%; }
+            66% { --x1: 50%; --y1: 105%; --x2: 15%; --y2: -15%; --x3: 80%; --y3: 75%; }
+            100% { --x1: 15%; --y1: 95%; --x2: 85%; --y2: -10%; --x3: 35%; --y3: 15%; }
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.015'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        h1, .controls, svg, #info, .section-title, .container-block, .nav-btn {
+            position: relative;
+            z-index: 2;
+        }
+
+        h1 { 
+            margin: 0 0 8px 0; 
+            font-weight: 200; 
+            letter-spacing: 4px;
+            color: #ffffff;
+            font-size: 26px;
+            text-align: center;
+            opacity: 0.95;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.6);
+        }
+        
+        .controls {
+            margin-bottom: 25px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 8px 16px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        select {
+            padding: 6px 16px;
+            font-size: 14px;
+            font-family: inherit;
+            font-weight: 400;
+            background-color: rgba(8, 10, 15, 0.75);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.25s ease;
+            appearance: none;
+            -webkit-appearance: none;
+            padding-right: 28px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23ffffff' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: calc(100% - 12px) center;
+        }
+        select:focus, select:hover { 
+            border-color: rgba(255, 255, 255, 0.25);
+            background-color: rgba(8, 10, 15, 0.9);
+        }
+
+        button.toggle-enharmonic {
+            padding: 6px 14px;
+            font-size: 12px;
+            font-family: inherit;
+            font-weight: 500;
+            background-color: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            letter-spacing: 0.5px;
+        }
+        button.toggle-enharmonic:hover {
+            border-color: rgba(255, 255, 255, 0.35);
+            color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.12);
+        }
+
+        svg { 
+            margin: 10px 0;
+            filter: drop-shadow(0 15px 35px rgba(0,0,0,0.6));
+        }
+        
+        path.outer-note-sector {
+            stroke: #080a0f;
+            stroke-width: 2px;
+            cursor: pointer;
+            transition: fill 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s;
+        }
+        path.outer-note-sector:hover {
+            filter: brightness(1.15);
+        }
+
+        path.inner-quality-sector {
+            stroke: #080a0f;
+            stroke-width: 2px;
+            transition: fill 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s;
+            pointer-events: none;
+        }
+        
+        text.note-label {
+            font-weight: 500;
+            font-size: 15px;
+            fill: #ffffff;
+            pointer-events: none;
+            transition: opacity 0.4s, fill 0.4s;
+            letter-spacing: -0.5px;
+        }
+        text.quality-label {
+            font-size: 9px;
+            font-weight: 600;
+            fill: rgba(255, 255, 255, 0.8);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        text.quality-label.show {
+            opacity: 0.8;
+        }
+
+        .dimmed-text {
+            fill: rgba(255, 255, 255, 0.09) !important;
+        }
+
+        #info {
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+            min-height: 55px;
+            line-height: 1.6;
+            width: 100%;
+            max-width: 560px;
+            background: rgba(255, 255, 255, 0.015);
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-sizing: border-box;
+            letter-spacing: 0.2px;
+            backdrop-filter: blur(6px);
+        }
+
+        .section-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.35);
+            margin: 26px 0 10px 0;
+            font-weight: 600;
+        }
+
+        .container-block {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 660px;
+            margin-bottom: 5px;
+        }
+
+        button {
+            padding: 9px 15px;
+            font-size: 13px;
+            font-family: inherit;
+            font-weight: 400;
+            background-color: rgba(255, 255, 255, 0.02);
+            color: rgba(255, 255, 255, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            text-align: center;
+            backdrop-filter: blur(4px);
+        }
+        button:hover {
+            background-color: rgba(255, 255, 255, 0.07);
+            border-color: rgba(255, 255, 255, 0.18);
+            color: #ffffff;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button.active-mode-btn {
+            background-color: rgba(255, 255, 255, 0.93);
+            border-color: #ffffff;
+            color: #080a0f;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.12);
+        }
+        button.active-mode-btn:hover {
+            background-color: #ffffff;
+            color: #080a0f;
+            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.22);
+        }
+
+        button.chord-btn {
+            min-width: 75px;
+            line-height: 1.4;
+            background-color: rgba(255, 255, 255, 0.01);
+            border-width: 1px;
+            border-style: solid;
+        }
+        button.chord-btn:hover {
+            background-color: rgba(255, 255, 255, 0.04);
+            border-color: var(--chord-glow, rgba(255,255,255,0.4)) !important;
+            box-shadow: 0 0 12px var(--chord-glow, rgba(255,255,255,0.1));
+        }
+
+        /* プレミアム・ナビゲーションボタン専用スタイル */
+        .nav-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            color: rgba(255, 255, 255, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            letter-spacing: 1px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 500;
+            font-family: inherit;
+        }
+        .nav-btn:hover {
+            color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        /* 🎬 ページ遷移用のフェードカーテン */
+        .fade-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #080a0f; /* 完全にこのHTMLの背景色にシンクロ */
+            z-index: 10000;
+            pointer-events: none;
+            opacity: 1;
+            transition: opacity 0.4s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="fade-overlay" id="fadeOverlay"></div>
+
+    <button onclick="navigateWithFade('map.html')" class="nav-btn">➔ VIEW NETWORK MAP</button>
+
+    <h1>Immersive Circle of Fifths</h1>
+    
+    <div class="controls">
+        <select id="scale-select">
+            <option value="major">1. Major Scale</option>
+            <option value="melodic-minor">2. Melodic Minor</option>
+            <option value="harmonic-minor">3. Harmonic Minor</option>
+            <option value="harmonic-major">4. Harmonic Major</option>
+        </select>
+        <button id="enharmonic-toggle" class="toggle-enharmonic" style="display:none;">⇄ Switch ♯ / ♭</button>
+    </div>
+    
+    <svg width="400" height="400" viewBox="-220 -220 440 440" id="circle"></svg>
+
+    <div id="info">Select a Parent Scale, then click a note on the wheel to begin.</div>
+
+    <div class="section-title" id="modes-title" style="display:none;">Modes</div>
+    <div class="container-block" id="modes-area"></div>
+
+    <div class="section-title" id="chords-title" style="display:none;">Diatonic Chords</div>
+    <div class="container-block" id="chord-area"></div>
+
+    <script>
+        const chromatic = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+        const circleOfFifths = ["C", "G", "D", "A", "E", "B", "F#/Gb", "C#/Db", "G#/Ab", "D#/Eb", "A#/Bb", "F"];
+
+        const displayToInternal = {
+            "C": "C", "G": "G", "D": "D", "A": "A", "E": "E", "B": "B", "F": "F",
+            "F#/Gb": "Gb", "C#/Db": "Db", "G#/Ab": "Ab", "D#/Eb": "Eb", "A#/Bb": "Bb"
+        };
+
+        const enharmonicPairs = {
+            "Gb": "F#", "F#": "Gb",
+            "Db": "C#", "C#": "Db",
+            "Ab": "G#", "G#": "Ab",
+            "Eb": "D#", "D#": "Eb",
+            "Bb": "A#", "A#": "Bb"
+        };
+
+        const scaleIntervals = {
+            "major": [2, 2, 1, 2, 2, 2, 1],
+            "melodic-minor": [2, 1, 2, 2, 2, 2, 1],
+            "harmonic-minor": [2, 1, 2, 2, 1, 3, 1],
+            "harmonic-major": [2, 2, 1, 2, 1, 3, 1]
+        };
+
+        const modeNames = {
+            "major": ["Ionian", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian"],
+            "melodic-minor": ["Melodic Minor", "Dorian ♭2", "Lydian Augmented", "Lydian Dominant", "Mixolydian ♭6", "Locrian ♮2", "Altered / Super Locrian"],
+            "harmonic-minor": ["Harmonic Minor", "Locrian ♮6", "Ionian Augmented", "Dorian ♯4", "Phrygian Dominant", "Lydian ♯2", "Ultralocrian / Altered 𝄫7"],
+            "harmonic-major": ["Harmonic Major", "Dorian ♭5", "Phrygian ♭4", "Lydian ♭3", "Mixolydian ♭2", "Lydian Augmented ♯2", "Locrian 𝄫7"]
+        };
+
+        let audioCtx = null;
+        const noteFreqs = {
+            "C": 261.63, "Db": 277.18, "D": 293.66, "Eb": 311.13, "E": 329.63, "F": 349.23,
+            "Gb": 369.99, "G": 392.00, "Ab": 415.30, "A": 440.00, "Bb": 466.16, "B": 493.88,
+            "F#": 369.99, "C#": 277.18, "G#": 415.30, "D#": 311.13, "A#": 466.16
+        };
+
+        let currentSelectedRoot = null; 
+        let currentRotationIndex = 0;
+
+        const baseNotePositions = { "C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11 };
+        const alphabetList = ["C", "D", "E", "F", "G", "A", "B"];
+
+        function getRootLetter(rootNote) {
+            return rootNote.charAt(0);
+        }
+
+        function calculatePerfectScaleLabels(notesArray, rootNote) {
+            let startLetter = getRootLetter(rootNote);
+            let currentLetterIdx = alphabetList.indexOf(startLetter);
+
+            return notesArray.map((internalNote) => {
+                const targetLetter = alphabetList[currentLetterIdx];
+                const internalIdx = chromatic.indexOf(internalNote === "F#" ? "Gb" : 
+                                                    internalNote === "C#" ? "Db" : 
+                                                    internalNote === "G#" ? "Ab" : 
+                                                    internalNote === "D#" ? "Eb" : 
+                                                    internalNote === "A#" ? "Bb" : internalNote);
+                const baseIdx = baseNotePositions[targetLetter];
+
+                let diff = internalIdx - baseIdx;
+                if (diff > 6) diff -= 12;
+                if (diff < -6) diff += 12;
+
+                let accidental = "";
+                if (diff === 1) accidental = "♯";
+                else if (diff === 2) accidental = "𝄪"; 
+                else if (diff === -1) accidental = "♭";
+                else if (diff === -2) accidental = "𝄫"; 
+
+                currentLetterIdx = (currentLetterIdx + 1) % 7;
+                return targetLetter + accidental;
+            });
+        }
+
+        function playNotes(chordNotes) {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const now = audioCtx.currentTime;
+            
+            const cleanNotes = chordNotes.map(n => n === "F#" ? "Gb" : n === "C#" ? "Db" : n === "G#" ? "Ab" : n === "D#" ? "Eb" : n === "A#" ? "Bb" : n);
+            const rootFreq = noteFreqs[cleanNotes[0]];
+
+            const masterGain = audioCtx.createGain();
+            masterGain.gain.setValueAtTime(0.25, now);
+            masterGain.connect(audioCtx.destination);
+
+            cleanNotes.forEach((noteName, index) => {
+                let freq = noteFreqs[noteName];
+                if (index === 0) freq /= 2; 
+                if (index > 0 && freq < rootFreq) freq *= 2;
+                if (index === 3) freq *= 2; 
+
+                const detunes = [-5, 5];
+                detunes.forEach(detuneVal => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    
+                    osc.type = 'sawtooth'; 
+                    osc.frequency.setValueAtTime(freq, now);
+                    osc.detune.setValueAtTime(detuneVal, now);
+
+                    const filter = audioCtx.createBiquadFilter();
+                    filter.type = 'lowpass';
+                    filter.frequency.setValueAtTime(1300, now);
+                    filter.Q.setValueAtTime(1, now);
+
+                    gain.gain.setValueAtTime(0, now);
+                    gain.gain.linearRampToValueAtTime(0.1, now + 0.08);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
+                    
+                    osc.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(masterGain);
+                    
+                    osc.start(now);
+                    osc.stop(now + 1.8);
+                });
+            });
+        }
+
+        function playSingleNote(noteName, index, isLast, referenceRoot) {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const playTime = audioCtx.currentTime;
+            
+            const cleanNote = noteName === "F#" ? "Gb" : noteName === "C#" ? "Db" : noteName === "G#" ? "Ab" : noteName === "D#" ? "Eb" : noteName === "A#" ? "Bb" : noteName;
+            const cleanRoot = referenceRoot === "F#" ? "Gb" : referenceRoot === "C#" ? "Db" : referenceRoot === "G#" ? "Ab" : referenceRoot === "D#" ? "Eb" : referenceRoot === "A#" ? "Bb" : referenceRoot;
+            
+            let freq = noteFreqs[cleanNote];
+
+            if (index > 0 && freq < noteFreqs[cleanRoot]) freq *= 2;
+            if (isLast) freq = noteFreqs[cleanRoot] * 2; 
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            const filter = document.createElement('div') ? audioCtx.createBiquadFilter() : null;
+
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(freq, playTime);
+            
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(1500, playTime);
+
+            const duration = isLast ? 1.4 : 0.7;
+            const volume = isLast ? 0.09 : 0.07;
+
+            gain.gain.setValueAtTime(0, playTime);
+            gain.gain.linearRampToValueAtTime(volume, playTime + 0.04);
+            gain.gain.exponentialRampToValueAtTime(0.001, playTime + duration);
+
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start(playTime);
+            osc.stop(playTime + duration);
+        }
+
+        function getChordQuality(root, third, fifth, seventh) {
+            const toIdx = (n) => chromatic.indexOf(n === "F#" ? "Gb" : n === "C#" ? "Db" : n === "G#" ? "Ab" : n === "D#" ? "Eb" : n === "A#" ? "Bb" : n);
+            const rIdx = toIdx(root);
+            const t3 = (toIdx(third) - rIdx + 12) % 12;
+            const t5 = (toIdx(fifth) - rIdx + 12) % 12;
+            const t7 = (toIdx(seventh) - rIdx + 12) % 12;
+
+            if (t3 === 4 && t5 === 7 && t7 === 11) return "M7";
+            if (t3 === 4 && t5 === 7 && t7 === 10) return "7";
+            if (t3 === 3 && t5 === 7 && t7 === 10) return "m7";
+            if (t3 === 3 && t5 === 6 && t7 === 10) return "m7♭5";
+            if (t3 === 3 && t5 === 6 && t7 === 9)  return "dim7";
+            if (t3 === 4 && t5 === 8 && t7 === 11) return "augM7";
+            if (t3 === 4 && t5 === 8 && t7 === 10) return "7#5";
+            if (t3 === 3 && t5 === 7 && t7 === 11) return "m(M7)";
+            if (t3 === 4 && t5 === 6 && t7 === 10) return "7♭5";
+            if (t3 === 4 && t5 === 6 && t7 === 11) return "M7♭5";
+            if (t3 === 3 && t5 === 6 && t7 === 11) return "m(M7)♭5";
+
+            if (t5 === 8) return "augM7"; 
+            if (t5 === 6) return "m7♭5";   
+            return "m7"; 
+        }
+
+        function getChordColor(quality) {
+            if (quality.includes("#5") || quality.includes("aug")) return "#d97706"; 
+            if (quality === "M7")       return "#dc2626";      
+            if (quality === "7")        return "#eab308"; 
+            if (quality === "7♭5")      return "#eab308"; 
+            if (quality === "M7♭5")     return "#dc2626";      
+            if (quality === "m7")       return "#2563eb";      
+            if (quality.includes("(M7)")) return "#7c3aed";    
+            if (quality.includes("♭5")) return "#16a34a";      
+            if (quality.includes("dim7")) return "#580242";    
+            return "#4b5563";
+        }
+
+        const svg = document.getElementById('circle');
+        const scaleSelect = document.getElementById('scale-select');
+        const enharmonicToggle = document.getElementById('enharmonic-toggle');
+        const info = document.getElementById('info');
+        const modesArea = document.getElementById('modes-area');
+        const chordArea = document.getElementById('chord-area');
+
+        circleOfFifths.forEach((displayNote, i) => {
+            const internalNote = displayToInternal[displayNote];
+
+            const angleStart = (i * 30 - 15) - 90;
+            const angleEnd = (i * 30 + 15) - 90;
+            const radStart = (angleStart * Math.PI) / 180;
+            const radEnd = (angleEnd * Math.PI) / 180;
+
+            const hue = (160 + i * 30) % 360;
+            
+            const x1_out = 200 * Math.cos(radStart); const y1_out = 200 * Math.sin(radStart);
+            const x2_out = 200 * Math.cos(radEnd);   const y2_out = 200 * Math.sin(radEnd);
+            const x1_mid = 140 * Math.cos(radEnd);   const y1_mid = 140 * Math.sin(radEnd);
+            const x2_mid = 140 * Math.cos(radStart); const y2_mid = 140 * Math.sin(radStart);
+            const dOuter = `M ${x1_out} ${y1_out} A 200 200 0 0 1 ${x2_out} ${y2_out} L ${x1_mid} ${y1_mid} A 140 140 0 0 0 ${x2_mid} ${y2_mid} Z`;
+
+            const defaultOuterFill = `hsl(${hue}, 18%, 18%)`; 
+            const activeOuterFill = `hsl(${hue}, 55%, 45%)`;  
+            const dimmedOuterFill = `#141923`;                 
+
+            const pathOuter = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            pathOuter.setAttribute("d", dOuter);
+            pathOuter.setAttribute("id", `path-${internalNote}`);
+            pathOuter.setAttribute("class", "outer-note-sector");
+            pathOuter.setAttribute("fill", defaultOuterFill);
+            pathOuter.dataset.defaultFill = defaultOuterFill;
+            pathOuter.dataset.activeFill = activeOuterFill;
+            pathOuter.dataset.dimmedFill = dimmedOuterFill;
+            svg.appendChild(pathOuter);
+
+            const x1_mid_in = 135 * Math.cos(radStart); const y1_mid_in = 135 * Math.sin(radStart);
+            const x2_mid_in = 135 * Math.cos(radEnd);   const y2_mid_in = 135 * Math.sin(radEnd);
+            const x1_in     = 90 * Math.cos(radEnd);    const y1_in     = 90 * Math.sin(radEnd);
+            const x2_in     = 90 * Math.cos(radStart);  const y2_in     = 90 * Math.sin(radStart);
+            const dInner = `M ${x1_mid_in} ${y1_mid_in} A 135 135 0 0 1 ${x2_mid_in} ${y2_mid_in} L ${x1_in} ${y1_in} A 90 90 0 0 0 ${x2_in} ${y2_in} Z`;
+
+            const pathInner = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            pathInner.setAttribute("d", dInner);
+            pathInner.setAttribute("id", `quality-path-${internalNote}`);
+            pathInner.setAttribute("class", "inner-quality-sector");
+            pathInner.setAttribute("fill", "#111520"); 
+            svg.appendChild(pathInner);
+
+            const textAngle = (i * 30) - 90;
+            const textRad = (textAngle * Math.PI) / 180;
+            const tX = 170 * Math.cos(textRad); const tY = 170 * Math.sin(textRad);
+            
+            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            text.setAttribute("x", tX); text.setAttribute("y", tY);
+            text.setAttribute("text-anchor", "middle"); text.setAttribute("dominant-baseline", "central");
+            text.setAttribute("class", "note-label");
+            text.setAttribute("id", `text-${internalNote}`);
+            text.style.fontSize = displayNote.includes('/') ? "11px" : "15px";
+            text.textContent = displayNote;
+            svg.appendChild(text);
+
+            const qX = 112 * Math.cos(textRad); const qY = 112 * Math.sin(textRad);
+            const qText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            qText.setAttribute("x", qX); qText.setAttribute("y", qY);
+            qText.setAttribute("text-anchor", "middle"); qText.setAttribute("dominant-baseline", "central");
+            qText.setAttribute("class", "quality-label");
+            qText.setAttribute("id", `quality-${internalNote}`);
+            svg.appendChild(qText);
+
+            pathOuter.addEventListener('click', () => {
+                currentSelectedRoot = internalNote; 
+                currentRotationIndex = 0;
+                renderModalUniverse(currentRotationIndex); 
+            });
+        });
+
+        enharmonicToggle.addEventListener('click', () => {
+            if (currentSelectedRoot && enharmonicPairs[currentSelectedRoot]) {
+                currentSelectedRoot = enharmonicPairs[currentSelectedRoot];
+                renderModalUniverse(currentRotationIndex);
+            }
+        });
+
+        function renderModalUniverse(modeRotationIndex) {
+            currentRotationIndex = modeRotationIndex;
+            const currentParentScale = scaleSelect.value;
+            const intervals = scaleIntervals[currentParentScale];
+            
+            info.style.color = "#ffffff";
+            document.getElementById('modes-title').style.display = 'block';
+            document.getElementById('chords-title').style.display = 'block';
+
+            const hasEnharmonic = enharmonicPairs[currentSelectedRoot] !== undefined;
+            enharmonicToggle.style.display = hasEnharmonic ? 'inline-block' : 'none';
+
+            const cleanRootForIndex = currentSelectedRoot === "F#" ? "Gb" : 
+                                      currentSelectedRoot === "C#" ? "Db" : 
+                                      currentSelectedRoot === "G#" ? "Ab" : 
+                                      currentSelectedRoot === "D#" ? "Eb" : 
+                                      currentSelectedRoot === "A#" ? "Bb" : currentSelectedRoot;
+            
+            let currentChromaticIdx = chromatic.indexOf(cleanRootForIndex);
+            
+            const isSharpRoot = currentSelectedRoot.includes("#");
+            
+            const parentScaleNotes = [currentSelectedRoot];
+            for(let j = 0; j < 6; j++) {
+                currentChromaticIdx = (currentChromaticIdx + intervals[j]) % 12;
+                let nextNote = chromatic[currentChromaticIdx];
+                if (isSharpRoot) {
+                    if (nextNote === "Db") nextNote = "C#";
+                    if (nextNote === "Eb") nextNote = "D#";
+                    if (nextNote === "Gb") nextNote = "F#";
+                    if (nextNote === "Ab") nextNote = "G#";
+                    if (nextNote === "Bb") nextNote = "A#";
+                }
+                parentScaleNotes.push(nextNote);
+            }
+
+            const modalScaleNotes = [];
+            for (let i = 0; i < 7; i++) {
+                modalScaleNotes.push(parentScaleNotes[(i + modeRotationIndex) % 7]);
+            }
+            const modalRoot = modalScaleNotes[0];
+
+            const parentSmartLabels = calculatePerfectScaleLabels(parentScaleNotes, currentSelectedRoot);
+            
+            const modalSmartLabels = [];
+            for (let i = 0; i < 7; i++) {
+                modalSmartLabels.push(parentSmartLabels[(i + modeRotationIndex) % 7]);
+            }
+            const modalRootLabel = modalSmartLabels[0];
+
+            circleOfFifths.forEach(dn => {
+                const inote = displayToInternal[dn];
+                const pOuter = document.getElementById(`path-${inote}`);
+                const pInner = document.getElementById(`quality-path-${inote}`);
+                const t = document.getElementById(`text-${inote}`);
+                
+                if(pOuter) { pOuter.style.fill = pOuter.dataset.dimmedFill; pOuter.style.filter = "none"; }
+                if(pInner) { pInner.style.filter = "none"; pInner.style.fill = "#11141d"; }
+                if(t) t.classList.add('dimmed-text');
+            });
+
+            document.querySelectorAll('.quality-label').forEach(q => {
+                q.classList.remove('show'); q.textContent = "";
+            });
+
+            const diatonicChords = [];
+            
+            for(let deg = 0; deg < 7; deg++) {
+                const r = modalScaleNotes[deg];
+                const t = modalScaleNotes[(deg + 2) % 7];
+                const f = modalScaleNotes[(deg + 4) % 7];
+                const s = modalScaleNotes[(deg + 6) % 7];
+                
+                const quality = getChordQuality(r, t, f, s);
+                const displayRoot = modalSmartLabels[deg];
+                diatonicChords.push({ root: r, notes: [r, t, f, s], label: displayRoot + quality, quality: quality });
+
+                const cleanR = r === "F#" ? "Gb" : r === "C#" ? "Db" : r === "G#" ? "Ab" : r === "D#" ? "Eb" : r === "A#" ? "Bb" : r;
+                const qElement = document.getElementById(`quality-${cleanR}`);
+                if (qElement) {
+                    qElement.textContent = quality; 
+                    qElement.classList.add('show');
+                }
+
+                const targetOuterPath = document.getElementById(`path-${cleanR}`);
+                const targetInnerPath = document.getElementById(`quality-path-${cleanR}`);
+                const targetText = document.getElementById(`text-${cleanR}`);
+                
+                if(targetOuterPath) {
+                    targetOuterPath.style.fill = targetOuterPath.dataset.activeFill;
+                    if(deg === 0) targetOuterPath.style.filter = "drop-shadow(0px 4px 12px rgba(255,255,255,0.25))"; 
+                }
+                
+                if(targetInnerPath) {
+                    targetInnerPath.style.fill = getChordColor(quality);
+                    if(deg === 0) targetInnerPath.style.filter = "drop-shadow(0px 4px 12px " + getChordColor(quality) + "44)";
+                }
+                
+                if(targetText) targetText.classList.remove('dimmed-text');
+            }
+
+            const arpeggioNotes = [...modalScaleNotes, modalScaleNotes[0]];
+            arpeggioNotes.forEach((noteName, index) => {
+                setTimeout(() => {
+                    playSingleNote(noteName, index, index === 7, arpeggioNotes[0]);
+                }, index * 170);
+            });
+
+            const activeModeName = modeNames[currentParentScale][modeRotationIndex];
+            const textScaleSequence = modalSmartLabels.join('  ·  ');
+            info.innerHTML = `<span style="font-size:13px; text-transform:uppercase; letter-spacing:1px; color:rgba(255,255,255,0.4);">Current Mode</span><br><span style="font-size:17px; font-weight:300; color:#fff;">${modalRootLabel} ${activeModeName}</span><br><span style="font-size:13px; color:rgba(255, 255, 255, 0.5); font-weight:300; letter-spacing:0.5px;">${textScaleSequence}</span>`;
+
+            modesArea.innerHTML = "";
+            const currentScaleModesList = modeNames[currentParentScale];
+            currentScaleModesList.forEach((mName, idx) => {
+                const modeBtn = document.createElement('button');
+                const modeRootName = parentSmartLabels[idx];
+                modeBtn.textContent = `${modeRootName} ${mName}`;
+                if(idx === modeRotationIndex) modeBtn.className = 'active-mode-btn';
+                
+                modeBtn.addEventListener('click', () => {
+                    renderModalUniverse(idx); 
+                });
+                modesArea.appendChild(modeBtn);
+            });
+
+            chordArea.innerHTML = "";
+            const numerals = ["I", "II", "III", "IV", "V", "VI", "VII"];
+            diatonicChords.forEach((chord, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'chord-btn';
+                btn.style.setProperty('--chord-glow', getChordColor(chord.quality));
+                btn.style.borderColor = getChordColor(chord.quality) + "55"; 
+                btn.style.color = "#ffffff";
+                btn.innerHTML = `<span style="color:${getChordColor(chord.quality)}; font-size:10px; font-weight:600; opacity:0.8;">${numerals[idx]}</span><br><span style="font-weight:400;">${chord.label}</span>`;
+                
+                btn.addEventListener('click', () => {
+                    playNotes(chord.notes);
+                });
+                chordArea.appendChild(btn);
+            });
+        }
+
+        scaleSelect.addEventListener('change', () => {
+            if (currentSelectedRoot) {
+                renderModalUniverse(0);
+            } else {
+                document.querySelectorAll('path.outer-note-sector').forEach(p => p.style.fill = p.dataset.defaultFill);
+                document.querySelectorAll('path.inner-quality-sector').forEach(p => p.style.fill = "#111520");
+                document.querySelectorAll('text.note-label').forEach(t => t.classList.remove('dimmed-text'));
+                document.querySelectorAll('.quality-label').forEach(q => { q.classList.remove('show'); q.textContent = ""; });
+                modesArea.innerHTML = ""; chordArea.innerHTML = "";
+                document.getElementById('modes-title').style.display = 'none';
+                document.getElementById('chords-title').style.display = 'none';
+                enharmonicToggle.style.display = 'none';
+                info.style.color = "rgba(255, 255, 255, 0.6)";
+                info.textContent = "Select a Parent Scale, then click a note on the wheel to begin.";
+                currentSelectedRoot = null;
+            }
+        });
+
+        /* 🎬 ページフェードイン・アウト処理 */
+        window.addEventListener('DOMContentLoaded', () => {
+            const overlay = document.getElementById('fadeOverlay');
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+            }, 50);
+        });
+
+        function navigateWithFade(url) {
+            const overlay = document.getElementById('fadeOverlay');
+            overlay.style.opacity = '1';
+            setTimeout(() => {
+                window.location.href = url;
+            }, 400);
+        }
+    </script>
+</body>
+</html>
