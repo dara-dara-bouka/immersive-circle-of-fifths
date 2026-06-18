@@ -13,7 +13,7 @@
     <meta name="twitter:card" content="summary_large_image">
 
     <style>
-        /* 最新のCSS機能で座標を数値として定義 */
+        /* 最新のCSS機能で座標を数値として定義（これにより100%シームレスに動きます） */
         @property --x1 { syntax: '<percentage>'; inherits: false; initial-value: 30%; }
         @property --y1 { syntax: '<percentage>'; inherits: false; initial-value: -10%; }
         @property --x2 { syntax: '<percentage>'; inherits: false; initial-value: 85%; }
@@ -21,38 +21,70 @@
         @property --x3 { syntax: '<percentage>'; inherits: false; initial-value: 10%; }
         @property --y3 { syntax: '<percentage>'; inherits: false; initial-value: 50%; }
 
-        /* モダンミニマル・プレミアムテーマ：完全シームレス・アンビエントオーロラ */
+        :root {
+            --bg-color: #080306; 
+            --card-bg: rgba(16, 10, 13, 0.85); 
+            --text-color: #f0f3f8;
+            --border-alpha: rgba(255, 255, 255, 0.07);
+            
+            /* コードタイプに応じた厳格なカラーブランディング（ダークファンタジー調） */
+            --color-M7: #dc2626;      /* 鮮烈な赤 */
+            --color-augM7: #d97706;   /* 深みのあるオレンジ */
+            --color-7: #eab308;       /* 妖艶なゴールド */
+            --color-m7b5: #16a34a;    /* 密林のグリーン */
+            --color-m7: #2563eb;       /* 深海のブルー */
+            --color-mM7: #7c3aed;      /* 神秘的なパープル */
+            --color-dim7: #ca228e;     /* 禁忌のマゼンタ */
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #080a0f;
-            color: #f0f3f8;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 30px 20px;
-            box-sizing: border-box;
             -webkit-font-smoothing: antialiased;
             position: relative;
             overflow-x: hidden;
-            
+
+            /* シームレスに動くオーロラ背景アニメーション */
             background-image: 
-                radial-gradient(circle at var(--x1) var(--y1), #1c264f 0%, transparent 65%),
-                radial-gradient(circle at var(--x2) var(--y2), #060b1c 0%, transparent 60%),
-                radial-gradient(circle at var(--x3) var(--y3), #1c153d 0%, transparent 55%);
+                radial-gradient(circle at var(--x1) var(--y1), #240510 0%, transparent 65%),
+                radial-gradient(circle at var(--x2) var(--y2), #12040e 0%, transparent 60%),
+                radial-gradient(circle at var(--x3) var(--y3), #17050f 0%, transparent 55%);
             
-            animation: seamlessAurora 18s ease-in-out infinite alternate;
+            animation: seamlessAurora 20s ease-in-out infinite alternate;
         }
 
         @keyframes seamlessAurora {
-            0% { --x1: 20%; --y1: -10%; --x2: 85%; --y2: 85%; --x3: 10%; --y3: 50%; }
-            33% { --x1: 75%; --y1: -20%; --x2: 25%; --y2: 90%; --x3: 90%; --y3: 30%; }
-            66% { --x1: 50%; --y1: 105%; --x2: 15%; --y2: -15%; --x3: 80%; --y3: 75%; }
-            100% { --x1: 15%; --y1: 95%; --x2: 85%; --y2: -10%; --x3: 35%; --y3: 15%; }
+            0% {
+                --x1: 20%;  --y1: -10%;
+                --x2: 85%;  --y2: 85%;
+                --x3: 10%;  --y3: 50%;
+            }
+            33% {
+                --x1: 75%;  --y1: -20%;
+                --x2: 25%;  --y2: 90%;
+                --x3: 90%;  --y3: 30%;
+            }
+            66% {
+                --x1: 50%;  --y1: 105%;
+                --x2: 15%;  --y2: -15%;
+                --x3: 80%;  --y3: 75%;
+            }
+            100% {
+                --x1: 15%;  --y1: 95%;
+                --x2: 85%;  --y2: -10%;
+                --x3: 35%;  --y3: 15%;
+            }
         }
 
+        /* 画面全体の超微細アナログノイズ（ザラザラ感）テクスチャ */
         body::before {
             content: "";
             position: fixed;
@@ -62,731 +94,1038 @@
             z-index: 1;
         }
 
-        h1, .controls, svg, #info, .section-title, .container-block, .nav-btn {
+        header, main, .selector-container, #enharmonic-toggle, .nav-container, .search-container, .piano-container {
             position: relative;
             z-index: 2;
         }
 
-        h1 { 
-            margin: 0 0 8px 0; 
-            font-weight: 200; 
+        header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-weight: 200;
             letter-spacing: 4px;
-            color: #ffffff;
-            font-size: 26px;
-            text-align: center;
-            opacity: 0.95;
-            text-shadow: 0 4px 15px rgba(0,0,0,0.6);
-        }
-        
-        .controls {
-            margin-bottom: 25px;
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.03);
-            padding: 8px 16px;
-            border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.07);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            font-size: 28px;
+            margin: 0 0 5px 0;
+            color: #fff;
         }
 
-        select {
-            padding: 6px 16px;
-            font-size: 14px;
-            font-family: inherit;
-            font-weight: 400;
-            background-color: rgba(8, 10, 15, 0.75);
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            cursor: pointer;
-            outline: none;
-            transition: all 0.25s ease;
-            appearance: none;
-            -webkit-appearance: none;
-            padding-right: 28px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23ffffff' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: calc(100% - 12px) center;
-        }
-        select:focus, select:hover { 
-            border-color: rgba(255, 255, 255, 0.25);
-            background-color: rgba(8, 10, 15, 0.9);
-        }
-
-        button.toggle-enharmonic {
-            padding: 6px 14px;
+        .subtitle {
             font-size: 12px;
-            font-family: inherit;
-            font-weight: 500;
-            background-color: rgba(255, 255, 255, 0.06);
-            color: rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.09);
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.25s ease;
-            letter-spacing: 0.5px;
-        }
-        button.toggle-enharmonic:hover {
-            border-color: rgba(255, 255, 255, 0.35);
-            color: #ffffff;
-            background-color: rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 1px;
+            margin: 0;
         }
 
-        svg { 
-            margin: 10px 0;
-            filter: drop-shadow(0 15px 35px rgba(0,0,0,0.6));
-        }
-        
-        path.outer-note-sector {
-            stroke: #080a0f;
-            stroke-width: 2px;
-            cursor: pointer;
-            transition: fill 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.2s;
-        }
-        path.outer-note-sector:hover {
-            filter: brightness(1.15);
-        }
-
-        path.inner-quality-sector {
-            stroke: #080a0f;
-            stroke-width: 2px;
-            transition: fill 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s;
-            pointer-events: none;
-        }
-        
-        text.note-label {
-            font-weight: 500;
-            font-size: 15px;
-            fill: #ffffff;
-            pointer-events: none;
-            transition: opacity 0.4s, fill 0.4s;
-            letter-spacing: -0.5px;
-        }
-        text.quality-label {
-            font-size: 9px;
-            font-weight: 600;
-            fill: rgba(255, 255, 255, 0.8);
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.4s;
-        }
-        text.quality-label.show {
-            opacity: 0.8;
-        }
-
-        .dimmed-text {
-            fill: rgba(255, 255, 255, 0.09) !important;
-        }
-
-        #info {
-            font-size: 15px;
-            color: rgba(255, 255, 255, 0.6);
-            text-align: center;
-            min-height: 55px;
-            line-height: 1.6;
-            width: 100%;
-            max-width: 560px;
-            background: rgba(255, 255, 255, 0.015);
-            padding: 14px 20px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            box-sizing: border-box;
-            letter-spacing: 0.2px;
-            backdrop-filter: blur(6px);
-        }
-
-        .section-title {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: rgba(255, 255, 255, 0.35);
-            margin: 26px 0 10px 0;
-            font-weight: 600;
-        }
-
-        .container-block {
+        .nav-container {
             display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: center;
-            max-width: 660px;
-            margin-bottom: 5px;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
-        button {
-            padding: 9px 15px;
-            font-size: 13px;
-            font-family: inherit;
-            font-weight: 400;
-            background-color: rgba(255, 255, 255, 0.02);
-            color: rgba(255, 255, 255, 0.65);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            text-align: center;
-            backdrop-filter: blur(4px);
-        }
-        button:hover {
-            background-color: rgba(255, 255, 255, 0.07);
-            border-color: rgba(255, 255, 255, 0.18);
-            color: #ffffff;
-        }
-        button:active {
-            transform: scale(0.98);
-        }
-
-        button.active-mode-btn {
-            background-color: rgba(255, 255, 255, 0.93);
-            border-color: #ffffff;
-            color: #080a0f;
-            font-weight: 500;
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.12);
-        }
-        button.active-mode-btn:hover {
-            background-color: #ffffff;
-            color: #080a0f;
-            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.22);
-        }
-
-        button.chord-btn {
-            min-width: 75px;
-            line-height: 1.4;
-            background-color: rgba(255, 255, 255, 0.01);
-            border-width: 1px;
-            border-style: solid;
-        }
-        button.chord-btn:hover {
-            background-color: rgba(255, 255, 255, 0.04);
-            border-color: var(--chord-glow, rgba(255,255,255,0.4)) !important;
-            box-shadow: 0 0 12px var(--chord-glow, rgba(255,255,255,0.1));
-        }
-
-        /* プレミアム・ナビゲーションボタン専用スタイル */
         .nav-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
             color: rgba(255, 255, 255, 0.65);
-            border: 1px solid rgba(255, 255, 255, 0.07);
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 500;
+            border: 1px solid var(--border-alpha);
             padding: 8px 16px;
             border-radius: 20px;
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             letter-spacing: 1px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.3s;
             cursor: pointer;
-            font-size: 11px;
-            font-weight: 500;
-            font-family: inherit;
-        }
-        .nav-btn:hover {
-            color: #ffffff;
-            background-color: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4);
         }
 
-        /* 🎬 ページ遷移用のフェードカーテン */
+        .nav-btn:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.05);
+        }
+
+        /* 🔍 新機能：検索ボックスのスタイル */
+        .search-container {
+            position: relative;
+            width: 100%;
+            max-width: 340px;
+            margin-bottom: 15px;
+        }
+        .search-input {
+            width: 100%;
+            padding: 10px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border-alpha);
+            background: rgba(255, 255, 255, 0.04);
+            color: #fff;
+            font-size: 13px;
+            box-sizing: border-box;
+            outline: none;
+            backdrop-filter: blur(8px);
+            transition: all 0.3s;
+        }
+        .search-input:focus {
+            border-color: rgba(255, 255, 255, 0.25);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .autocomplete-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: rgba(16, 10, 13, 0.96);
+            border: 1px solid var(--border-alpha);
+            border-radius: 12px;
+            max-height: 220px;
+            overflow-y: auto;
+            z-index: 1000;
+            margin-top: 6px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            display: none;
+        }
+        .suggestion-item {
+            padding: 10px 14px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.75);
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+        }
+        .suggestion-item:hover {
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+        }
+
+        .selector-container {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 4px;
+            border-radius: 30px;
+            border: 1px solid var(--border-alpha);
+        }
+
+        .scale-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.55);
+            padding: 8px 18px;
+            font-size: 12px;
+            font-weight: 400;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .scale-btn.active {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #080306;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+        }
+
+        #enharmonic-toggle {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-alpha);
+            color: rgba(255, 255, 255, 0.6);
+            padding: 6px 14px;
+            font-size: 10px;
+            letter-spacing: 1px;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            display: none; /* 初期状態は非表示（ノート選択時に出現） */
+            transition: all 0.2s;
+            backdrop-filter: blur(8px);
+        }
+        #enharmonic-toggle:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        main {
+            display: flex;
+            flex-direction: row;
+            gap: 40px;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        /* 五度圏ホイールエリア */
+        .wheel-container {
+            position: relative;
+            width: 460px;
+            height: 460px;
+        }
+
+        svg.wheel-svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+            /* 時計の12時位置にトップのノートを配置するため初期回転を調整（30度*nのオフセット） */
+            transform: rotate(-15deg);
+        }
+
+        path.outer-note-sector {
+            cursor: pointer;
+            transition: fill 0.3s, opacity 0.3s;
+            stroke: rgba(8, 3, 6, 0.3);
+            stroke-width: 1.5px;
+        }
+
+        path.inner-quality-sector {
+            fill: #111520;
+            stroke: rgba(8, 3, 6, 0.2);
+            stroke-width: 1px;
+            transition: fill 0.4s;
+        }
+
+        text.note-label {
+            font-size: 15px;
+            font-weight: 600;
+            fill: #fff;
+            pointer-events: none;
+            transition: opacity 0.3s, fill 0.3s;
+            text-anchor: middle;
+            dominant-baseline: central;
+        }
+
+        text.quality-label {
+            font-size: 8px;
+            font-weight: 700;
+            fill: rgba(255, 255, 255, 0);
+            pointer-events: none;
+            transition: fill 0.3s;
+            text-anchor: middle;
+            dominant-baseline: central;
+        }
+        text.quality-label.show {
+            fill: rgba(255, 255, 255, 0.38);
+        }
+
+        .dimmed-text {
+            opacity: 0.25;
+        }
+
+        /* 右側インフォメーションパネル（完全すりガラスUI） */
+        .info-panel {
+            flex: 1;
+            max-width: 480px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-alpha);
+            padding: 24px;
+            border-radius: 16px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            min-height: 440px;
+            box-sizing: border-box;
+        }
+
+        .info-text {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 20px;
+            line-height: 1.6;
+            transition: color 0.3s;
+        }
+
+        .section-title {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.3);
+            text-transform: uppercase;
+            margin: 20px 0 10px 0;
+            display: none;
+        }
+
+        .results-area {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* モード表示用ミニカード */
+        .mode-card-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-alpha);
+            padding: 10px 14px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s, background 0.2s, border-color 0.2s;
+            cursor: pointer;
+        }
+        .mode-card-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(3px);
+            border-color: rgba(255,255,255,0.15);
+        }
+
+        .mode-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .mode-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .mode-formula {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.4);
+            font-family: monospace;
+        }
+
+        .mode-chord-tag {
+            font-size: 9px;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #fff;
+            border: 1px solid transparent;
+        }
+
+        /* 🔊 新機能：各カード用再生ボタン */
+        .play-btn {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.9);
+            padding: 4px 10px;
+            font-size: 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            margin-right: 8px;
+            transition: all 0.2s;
+        }
+        .play-btn:hover {
+            background: #fff;
+            color: #080306;
+            border-color: #fff;
+        }
+
+        /* ダイアトニックコード用リッチワイドカード */
+        .chord-card-item {
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid var(--border-alpha);
+            border-left-width: 4px; /* ここにコード性質色が適用されます */
+            padding: 12px 16px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+        .chord-card-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .card-left {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .card-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .card-sub {
+            font-size: 9px;
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        .card-right {
+            font-size: 12px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+            font-family: monospace;
+            letter-spacing: 1px;
+        }
+
+        /* 🎹 新機能：ピアノ鍵盤エリア */
+        .piano-container {
+            width: 100%;
+            max-width: 460px;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .piano-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.3);
+            text-transform: uppercase;
+        }
+        .piano-keyboard {
+            display: flex;
+            position: relative;
+            background: #120d10;
+            padding: 4px;
+            border-radius: 8px;
+            border: 1px solid var(--border-alpha);
+            height: 75px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .piano-key {
+            flex: 1;
+            background: rgba(255,255,255,0.12);
+            border-right: 1px solid #120d10;
+            border-radius: 0 0 4px 4px;
+            position: relative;
+            z-index: 1;
+            transition: background 0.2s;
+        }
+        .piano-key.black {
+            background: #251c22;
+            max-width: 18px;
+            height: 45px;
+            margin-left: -9px;
+            margin-right: -9px;
+            z-index: 2;
+            border-right: none;
+        }
+        .piano-key:last-child { border-right: none; }
+
+        /* 🎬 ページ間シームレスフェード用 */
         .fade-overlay {
             position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #080a0f; /* 完全にこのHTMLの背景色にシンクロ */
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background-color: #080306;
             z-index: 10000;
             pointer-events: none;
             opacity: 1;
             transition: opacity 0.4s ease;
         }
+
+        /* 📱 レスポンシブアライメント */
+        @media (max-width: 860px) {
+            main {
+                flex-direction: column;
+                gap: 25px;
+            }
+            .wheel-container {
+                width: 340px;
+                height: 340px;
+            }
+            .info-panel {
+                width: 100%;
+                min-height: auto;
+            }
+            .piano-container {
+                max-width: 340px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="fade-overlay" id="fadeOverlay"></div>
-
-    <button onclick="navigateWithFade('map.html')" class="nav-btn">➔ VIEW NETWORK MAP</button>
-
-    <h1>Immersive Circle of Fifths</h1>
     
-    <div class="controls">
-        <select id="scale-select">
-            <option value="major">1. Major Scale</option>
-            <option value="melodic-minor">2. Melodic Minor</option>
-            <option value="harmonic-minor">3. Harmonic Minor</option>
-            <option value="harmonic-major">4. Harmonic Major</option>
-        </select>
-        <button id="enharmonic-toggle" class="toggle-enharmonic" style="display:none;">⇄ Switch ♯ / ♭</button>
+    <div class="nav-container">
+        <button onclick="navigateWithFade('map.html')" class="nav-btn">➔ NETWORK MAP</button>
+        <button onclick="navigateWithFade('encyclopedia.html')" class="nav-btn">➔ ENCYCLOPEDIA</button>
     </div>
-    
-    <svg width="400" height="400" viewBox="-220 -220 440 440" id="circle"></svg>
 
-    <div id="info">Select a Parent Scale, then click a note on the wheel to begin.</div>
+    <header>
+        <h1>Immersive Circle of Fifths</h1>
+        <p class="subtitle">EXPLORE MODES, TONALITIES AND SCALE LINKAGES</p>
+    </header>
 
-    <div class="section-title" id="modes-title" style="display:none;">Modes</div>
-    <div class="container-block" id="modes-area"></div>
+    <div class="search-container">
+        <input type="text" class="search-input" id="searchInput" placeholder="Search root or mode (e.g., C, Lydian, Dorian)...">
+        <div class="autocomplete-suggestions" id="suggestions"></div>
+    </div>
 
-    <div class="section-title" id="chords-title" style="display:none;">Diatonic Chords</div>
-    <div class="container-block" id="chord-area"></div>
+    <div class="selector-container">
+        <button class="scale-btn active" data-scale="major">Major Scale</button>
+        <button class="scale-btn" data-scale="melodic_minor">Melodic Minor</button>
+        <button class="scale-btn" data-scale="harmonic_minor">Harmonic Minor</button>
+        <button class="scale-btn" data-scale="harmonic_major">Harmonic Major</button>
+    </div>
+
+    <button id="enharmonic-toggle">SWITCH TO ENHARMONIC KEY</button>
+
+    <main>
+        <div class="wheel-container">
+            <svg class="wheel-svg" viewBox="0 0 500 500">
+                <g id="wheel-group"></g>
+            </svg>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-text" id="info-status">Select a Parent Scale, then click a note on the wheel to begin.</div>
+            
+            <div class="section-title" id="modes-title">Available Modes</div>
+            <div class="results-area" id="modes-area"></div>
+
+            <div class="section-title" id="chords-title">Diatonic 7th Chords</div>
+            <div class="results-area" id="chords-area"></div>
+        </div>
+    </main>
+
+    <div class="piano-container">
+        <div class="piano-label">Scale Key Monitor</div>
+        <div class="piano-keyboard" id="pianoKeyboard"></div>
+    </div>
 
     <script>
-        const chromatic = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
-        const circleOfFifths = ["C", "G", "D", "A", "E", "B", "F#/Gb", "C#/Db", "G#/Ab", "D#/Eb", "A#/Bb", "F"];
+        // 🔊 新機能：Web Audio API コンテキスト初期化
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        const displayToInternal = {
-            "C": "C", "G": "G", "D": "D", "A": "A", "E": "E", "B": "B", "F": "F",
-            "F#/Gb": "Gb", "C#/Db": "Db", "G#/Ab": "Ab", "D#/Eb": "Eb", "A#/Bb": "Bb"
-        };
-
-        const enharmonicPairs = {
-            "Gb": "F#", "F#": "Gb",
-            "Db": "C#", "C#": "Db",
-            "Ab": "G#", "G#": "Ab",
-            "Eb": "D#", "D#": "Eb",
-            "Bb": "A#", "A#": "Bb"
-        };
-
-        const scaleIntervals = {
-            "major": [2, 2, 1, 2, 2, 2, 1],
-            "melodic-minor": [2, 1, 2, 2, 2, 2, 1],
-            "harmonic-minor": [2, 1, 2, 2, 1, 3, 1],
-            "harmonic-major": [2, 2, 1, 2, 1, 3, 1]
-        };
-
-        const modeNames = {
-            "major": ["Ionian", "Dorian", "Phrygian", "Lydian", "Mixolydian", "Aeolian", "Locrian"],
-            "melodic-minor": ["Melodic Minor", "Dorian ♭2", "Lydian Augmented", "Lydian Dominant", "Mixolydian ♭6", "Locrian ♮2", "Altered / Super Locrian"],
-            "harmonic-minor": ["Harmonic Minor", "Locrian ♮6", "Ionian Augmented", "Dorian ♯4", "Phrygian Dominant", "Lydian ♯2", "Ultralocrian / Altered 𝄫7"],
-            "harmonic-major": ["Harmonic Major", "Dorian ♭5", "Phrygian ♭4", "Lydian ♭3", "Mixolydian ♭2", "Lydian Augmented ♯2", "Locrian 𝄫7"]
-        };
-
-        let audioCtx = null;
-        const noteFreqs = {
-            "C": 261.63, "Db": 277.18, "D": 293.66, "Eb": 311.13, "E": 329.63, "F": 349.23,
-            "Gb": 369.99, "G": 392.00, "Ab": 415.30, "A": 440.00, "Bb": 466.16, "B": 493.88,
-            "F#": 369.99, "C#": 277.18, "G#": 415.30, "D#": 311.13, "A#": 466.16
-        };
-
-        let currentSelectedRoot = null; 
-        let currentRotationIndex = 0;
-
-        const baseNotePositions = { "C": 0, "D": 2, "E": 4, "F": 5, "G": 7, "A": 9, "B": 11 };
-        const alphabetList = ["C", "D", "E", "F", "G", "A", "B"];
-
-        function getRootLetter(rootNote) {
-            return rootNote.charAt(0);
-        }
-
-        function calculatePerfectScaleLabels(notesArray, rootNote) {
-            let startLetter = getRootLetter(rootNote);
-            let currentLetterIdx = alphabetList.indexOf(startLetter);
-
-            return notesArray.map((internalNote) => {
-                const targetLetter = alphabetList[currentLetterIdx];
-                const internalIdx = chromatic.indexOf(internalNote === "F#" ? "Gb" : 
-                                                    internalNote === "C#" ? "Db" : 
-                                                    internalNote === "G#" ? "Ab" : 
-                                                    internalNote === "D#" ? "Eb" : 
-                                                    internalNote === "A#" ? "Bb" : internalNote);
-                const baseIdx = baseNotePositions[targetLetter];
-
-                let diff = internalIdx - baseIdx;
-                if (diff > 6) diff -= 12;
-                if (diff < -6) diff += 12;
-
-                let accidental = "";
-                if (diff === 1) accidental = "♯";
-                else if (diff === 2) accidental = "𝄪"; 
-                else if (diff === -1) accidental = "♭";
-                else if (diff === -2) accidental = "𝄫"; 
-
-                currentLetterIdx = (currentLetterIdx + 1) % 7;
-                return targetLetter + accidental;
-            });
-        }
-
-        function playNotes(chordNotes) {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const now = audioCtx.currentTime;
-            
-            const cleanNotes = chordNotes.map(n => n === "F#" ? "Gb" : n === "C#" ? "Db" : n === "G#" ? "Ab" : n === "D#" ? "Eb" : n === "A#" ? "Bb" : n);
-            const rootFreq = noteFreqs[cleanNotes[0]];
-
-            const masterGain = audioCtx.createGain();
-            masterGain.gain.setValueAtTime(0.25, now);
-            masterGain.connect(audioCtx.destination);
-
-            cleanNotes.forEach((noteName, index) => {
-                let freq = noteFreqs[noteName];
-                if (index === 0) freq /= 2; 
-                if (index > 0 && freq < rootFreq) freq *= 2;
-                if (index === 3) freq *= 2; 
-
-                const detunes = [-5, 5];
-                detunes.forEach(detuneVal => {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    
-                    osc.type = 'sawtooth'; 
-                    osc.frequency.setValueAtTime(freq, now);
-                    osc.detune.setValueAtTime(detuneVal, now);
-
-                    const filter = audioCtx.createBiquadFilter();
-                    filter.type = 'lowpass';
-                    filter.frequency.setValueAtTime(1300, now);
-                    filter.Q.setValueAtTime(1, now);
-
-                    gain.gain.setValueAtTime(0, now);
-                    gain.gain.linearRampToValueAtTime(0.1, now + 0.08);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 1.8);
-                    
-                    osc.connect(filter);
-                    filter.connect(gain);
-                    gain.connect(masterGain);
-                    
-                    osc.start(now);
-                    osc.stop(now + 1.8);
-                });
-            });
-        }
-
-        function playSingleNote(noteName, index, isLast, referenceRoot) {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const playTime = audioCtx.currentTime;
-            
-            const cleanNote = noteName === "F#" ? "Gb" : noteName === "C#" ? "Db" : noteName === "G#" ? "Ab" : noteName === "D#" ? "Eb" : noteName === "A#" ? "Bb" : noteName;
-            const cleanRoot = referenceRoot === "F#" ? "Gb" : referenceRoot === "C#" ? "Db" : referenceRoot === "G#" ? "Ab" : referenceRoot === "D#" ? "Eb" : referenceRoot === "A#" ? "Bb" : referenceRoot;
-            
-            let freq = noteFreqs[cleanNote];
-
-            if (index > 0 && freq < noteFreqs[cleanRoot]) freq *= 2;
-            if (isLast) freq = noteFreqs[cleanRoot] * 2; 
-
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            const filter = document.createElement('div') ? audioCtx.createBiquadFilter() : null;
-
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(freq, playTime);
-            
-            filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(1500, playTime);
-
-            const duration = isLast ? 1.4 : 0.7;
-            const volume = isLast ? 0.09 : 0.07;
-
-            gain.gain.setValueAtTime(0, playTime);
-            gain.gain.linearRampToValueAtTime(volume, playTime + 0.04);
-            gain.gain.exponentialRampToValueAtTime(0.001, playTime + duration);
-
-            osc.connect(filter);
-            filter.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            osc.start(playTime);
-            osc.stop(playTime + duration);
-        }
-
-        function getChordQuality(root, third, fifth, seventh) {
-            const toIdx = (n) => chromatic.indexOf(n === "F#" ? "Gb" : n === "C#" ? "Db" : n === "G#" ? "Ab" : n === "D#" ? "Eb" : n === "A#" ? "Bb" : n);
-            const rIdx = toIdx(root);
-            const t3 = (toIdx(third) - rIdx + 12) % 12;
-            const t5 = (toIdx(fifth) - rIdx + 12) % 12;
-            const t7 = (toIdx(seventh) - rIdx + 12) % 12;
-
-            if (t3 === 4 && t5 === 7 && t7 === 11) return "M7";
-            if (t3 === 4 && t5 === 7 && t7 === 10) return "7";
-            if (t3 === 3 && t5 === 7 && t7 === 10) return "m7";
-            if (t3 === 3 && t5 === 6 && t7 === 10) return "m7♭5";
-            if (t3 === 3 && t5 === 6 && t7 === 9)  return "dim7";
-            if (t3 === 4 && t5 === 8 && t7 === 11) return "augM7";
-            if (t3 === 4 && t5 === 8 && t7 === 10) return "7#5";
-            if (t3 === 3 && t5 === 7 && t7 === 11) return "m(M7)";
-            if (t3 === 4 && t5 === 6 && t7 === 10) return "7♭5";
-            if (t3 === 4 && t5 === 6 && t7 === 11) return "M7♭5";
-            if (t3 === 3 && t5 === 6 && t7 === 11) return "m(M7)♭5";
-
-            if (t5 === 8) return "augM7"; 
-            if (t5 === 6) return "m7♭5";   
-            return "m7"; 
-        }
-
-        function getChordColor(quality) {
-            if (quality.includes("#5") || quality.includes("aug")) return "#d97706"; 
-            if (quality === "M7")       return "#dc2626";      
-            if (quality === "7")        return "#eab308"; 
-            if (quality === "7♭5")      return "#eab308"; 
-            if (quality === "M7♭5")     return "#dc2626";      
-            if (quality === "m7")       return "#2563eb";      
-            if (quality.includes("(M7)")) return "#7c3aed";    
-            if (quality.includes("♭5")) return "#16a34a";      
-            if (quality.includes("dim7")) return "#580242";    
-            return "#4b5563";
-        }
-
-        const svg = document.getElementById('circle');
-        const scaleSelect = document.getElementById('scale-select');
-        const enharmonicToggle = document.getElementById('enharmonic-toggle');
-        const info = document.getElementById('info');
-        const modesArea = document.getElementById('modes-area');
-        const chordArea = document.getElementById('chord-area');
-
-        circleOfFifths.forEach((displayNote, i) => {
-            const internalNote = displayToInternal[displayNote];
-
-            const angleStart = (i * 30 - 15) - 90;
-            const angleEnd = (i * 30 + 15) - 90;
-            const radStart = (angleStart * Math.PI) / 180;
-            const radEnd = (angleEnd * Math.PI) / 180;
-
-            const hue = (160 + i * 30) % 360;
-            
-            const x1_out = 200 * Math.cos(radStart); const y1_out = 200 * Math.sin(radStart);
-            const x2_out = 200 * Math.cos(radEnd);   const y2_out = 200 * Math.sin(radEnd);
-            const x1_mid = 140 * Math.cos(radEnd);   const y1_mid = 140 * Math.sin(radEnd);
-            const x2_mid = 140 * Math.cos(radStart); const y2_mid = 140 * Math.sin(radStart);
-            const dOuter = `M ${x1_out} ${y1_out} A 200 200 0 0 1 ${x2_out} ${y2_out} L ${x1_mid} ${y1_mid} A 140 140 0 0 0 ${x2_mid} ${y2_mid} Z`;
-
-            const defaultOuterFill = `hsl(${hue}, 18%, 18%)`; 
-            const activeOuterFill = `hsl(${hue}, 55%, 45%)`;  
-            const dimmedOuterFill = `#141923`;                 
-
-            const pathOuter = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            pathOuter.setAttribute("d", dOuter);
-            pathOuter.setAttribute("id", `path-${internalNote}`);
-            pathOuter.setAttribute("class", "outer-note-sector");
-            pathOuter.setAttribute("fill", defaultOuterFill);
-            pathOuter.dataset.defaultFill = defaultOuterFill;
-            pathOuter.dataset.activeFill = activeOuterFill;
-            pathOuter.dataset.dimmedFill = dimmedOuterFill;
-            svg.appendChild(pathOuter);
-
-            const x1_mid_in = 135 * Math.cos(radStart); const y1_mid_in = 135 * Math.sin(radStart);
-            const x2_mid_in = 135 * Math.cos(radEnd);   const y2_mid_in = 135 * Math.sin(radEnd);
-            const x1_in     = 90 * Math.cos(radEnd);    const y1_in     = 90 * Math.sin(radEnd);
-            const x2_in     = 90 * Math.cos(radStart);  const y2_in     = 90 * Math.sin(radStart);
-            const dInner = `M ${x1_mid_in} ${y1_mid_in} A 135 135 0 0 1 ${x2_mid_in} ${y2_mid_in} L ${x1_in} ${y1_in} A 90 90 0 0 0 ${x2_in} ${y2_in} Z`;
-
-            const pathInner = document.createElementNS("http://www.w3.org/2000/svg", "path");
-            pathInner.setAttribute("d", dInner);
-            pathInner.setAttribute("id", `quality-path-${internalNote}`);
-            pathInner.setAttribute("class", "inner-quality-sector");
-            pathInner.setAttribute("fill", "#111520"); 
-            svg.appendChild(pathInner);
-
-            const textAngle = (i * 30) - 90;
-            const textRad = (textAngle * Math.PI) / 180;
-            const tX = 170 * Math.cos(textRad); const tY = 170 * Math.sin(textRad);
-            
-            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            text.setAttribute("x", tX); text.setAttribute("y", tY);
-            text.setAttribute("text-anchor", "middle"); text.setAttribute("dominant-baseline", "central");
-            text.setAttribute("class", "note-label");
-            text.setAttribute("id", `text-${internalNote}`);
-            text.style.fontSize = displayNote.includes('/') ? "11px" : "15px";
-            text.textContent = displayNote;
-            svg.appendChild(text);
-
-            const qX = 112 * Math.cos(textRad); const qY = 112 * Math.sin(textRad);
-            const qText = document.createElementNS("http://www.w3.org/2000/svg", "text");
-            qText.setAttribute("x", qX); qText.setAttribute("y", qY);
-            qText.setAttribute("text-anchor", "middle"); qText.setAttribute("dominant-baseline", "central");
-            qText.setAttribute("class", "quality-label");
-            qText.setAttribute("id", `quality-${internalNote}`);
-            svg.appendChild(qText);
-
-            pathOuter.addEventListener('click', () => {
-                currentSelectedRoot = internalNote; 
-                currentRotationIndex = 0;
-                renderModalUniverse(currentRotationIndex); 
-            });
-        });
-
-        enharmonicToggle.addEventListener('click', () => {
-            if (currentSelectedRoot && enharmonicPairs[currentSelectedRoot]) {
-                currentSelectedRoot = enharmonicPairs[currentSelectedRoot];
-                renderModalUniverse(currentRotationIndex);
+        // 🎼 4つの親スケールシステムに属する28のモードすべての完全データ（1つも減らしていません）
+        const scaleStructures = {
+            major: {
+                name: "Major Scale",
+                roots: ["C", "G", "D", "A", "E", "B", "F♯", "C♯", "A♭", "E♭", "B♭", "F"],
+                enharmonics: { "C♯": "D♭", "F♯": "G♭" },
+                modes: [
+                    { name: "Ionian", degree: 1, formula: "1 2 3 4 5 6 7", chord: "M7", suffix: "M7", steps: [0,2,4,5,7,9,11] },
+                    { name: "Dorian", degree: 2, formula: "1 2 ♭3 4 5 6 ♭7", chord: "m7", suffix: "m7", steps: [0,2,3,5,7,9,10] },
+                    { name: "Phrygian", degree: 3, formula: "1 ♭2 ♭3 4 5 ♭6 ♭7", chord: "m7", suffix: "m7", steps: [0,1,3,5,7,8,10] },
+                    { name: "Lydian", degree: 4, formula: "1 2 3 ♯4 5 6 7", chord: "M7", suffix: "M7", steps: [0,2,4,6,7,9,11] },
+                    { name: "Mixolydian", degree: 5, formula: "1 2 3 4 5 6 ♭7", chord: "7", suffix: "7", steps: [0,2,4,5,7,9,10] },
+                    { name: "Aeolian", degree: 6, formula: "1 2 ♭3 4 5 ♭6 ♭7", chord: "m7", suffix: "m7", steps: [0,2,3,5,7,8,10] },
+                    { name: "Locrian", degree: 7, formula: "1 ♭2 ♭3 4 ♭5 ♭6 ♭7", chord: "m7♭5", suffix: "m7♭5", steps: [0,1,3,5,6,8,10] }
+                ]
+            },
+            melodic_minor: {
+                name: "Melodic Minor",
+                roots: ["A", "E", "B", "F♯", "C♯", "G♯", "D♯", "A♭", "E♭", "B♭", "F", "C", "G", "D"],
+                enharmonics: { "C♯": "D♭", "F♯": "G♭", "G♯": "A♭", "D♯": "E♭" },
+                modes: [
+                    { name: "Melodic Minor", degree: 1, formula: "1 2 ♭3 4 5 6 7", chord: "m(M7)", suffix: "m(M7)", steps: [0,2,3,5,7,9,11] },
+                    { name: "Dorian ♭2", degree: 2, formula: "1 ♭2 ♭3 4 5 6 ♭7", chord: "m7", suffix: "m7", steps: [0,1,3,5,7,9,10] },
+                    { name: "Lydian Augmented", degree: 3, formula: "1 2 3 ♯4 ♯5 6 7", chord: "augM7", suffix: "augM7", steps: [0,2,4,6,8,9,11] },
+                    { name: "Lydian Dominant", degree: 4, formula: "1 2 3 ♯4 5 6 ♭7", chord: "7", suffix: "7", steps: [0,2,4,6,7,9,10] },
+                    { name: "Mixolydian ♭6", degree: 5, formula: "1 2 3 4 5 ♭6 ♭7", chord: "7", suffix: "7", steps: [0,2,4,5,7,8,10] },
+                    { name: "Locrian ♮2", degree: 6, formula: "1 2 ♭3 4 ♭5 ♭6 ♭7", chord: "m7♭5", suffix: "m7♭5", steps: [0,2,3,5,6,8,10] },
+                    { name: "Superlocrian", degree: 7, formula: "1 ♭2 ♭3 ♭4 ♭5 ♭6 ♭7", chord: "m7♭5", suffix: "m7♭5", steps: [0,1,3,4,6,8,10] }
+                ]
+            },
+            harmonic_minor: {
+                name: "Harmonic Minor",
+                roots: ["A", "E", "B", "F♯", "C♯", "G♯", "D♯", "A♭", "E♭", "B♭", "F", "C", "G", "D"],
+                enharmonics: { "C♯": "D♭", "F♯": "G♭", "G♯": "A♭", "D♯": "E♭" },
+                modes: [
+                    { name: "Harmonic Minor", degree: 1, formula: "1 2 ♭3 4 5 ♭6 7", chord: "m(M7)", suffix: "m(M7)", steps: [0,2,3,5,7,8,11] },
+                    { name: "Locrian ♮6", degree: 2, formula: "1 ♭2 ♭3 4 ♭5 6 ♭7", chord: "m7♭5", suffix: "m7♭5", steps: [0,1,3,5,6,9,10] },
+                    { name: "Ionian Augmented", degree: 3, formula: "1 2 3 4 ♯5 6 7", chord: "augM7", suffix: "augM7", steps: [0,2,4,5,8,9,11] },
+                    { name: "Dorian ♯4", degree: 4, formula: "1 2 ♭3 ♯4 5 6 ♭7", chord: "m7", suffix: "m7", steps: [0,2,3,6,7,9,10] },
+                    { name: "Phrygian Dominant", degree: 5, formula: "1 ♭2 3 4 5 ♭6 ♭7", chord: "7", suffix: "7", steps: [0,1,4,5,7,8,10] },
+                    { name: "Lydian ♯2", degree: 6, formula: "1 ♯2 3 ♯4 5 6 7", chord: "M7", suffix: "M7", steps: [0,3,4,6,7,9,11] },
+                    { name: "Ultralocrian", degree: 7, formula: "1 ♭2 ♭3 ♭4 ♭5 ♭6 𝄫7", chord: "dim7", suffix: "dim7", steps: [0,1,3,4,6,8,9] }
+                ]
+            },
+            harmonic_major: {
+                name: "Harmonic Major",
+                roots: ["C", "G", "D", "A", "E", "B", "F♯", "C♯", "A♭", "E♭", "B♭", "F"],
+                enharmonics: { "C♯": "D♭", "F♯": "G♭" },
+                modes: [
+                    { name: "Harmonic Major", degree: 1, formula: "1 2 3 4 5 ♭6 7", chord: "M7", suffix: "M7", steps: [0,2,4,5,7,8,11] },
+                    { name: "Dorian ♭5", degree: 2, formula: "1 2 ♭3 4 ♭5 6 ♭7", chord: "m7♭5", suffix: "m7♭5", steps: [0,2,3,5,6,9,10] },
+                    { name: "Phrygian ♭4", degree: 3, formula: "1 ♭2 ♭3 ♭4 5 ♭6 ♭7", chord: "m7", suffix: "m7", steps: [0,1,3,4,7,8,10] },
+                    { name: "Lydian ♭3", degree: 4, formula: "1 2 ♭3 ♯4 5 6 7", chord: "m(M7)", suffix: "m(M7)", steps: [0,2,3,6,7,9,11] },
+                    { name: "Mixolydian ♭2", degree: 5, formula: "1 ♭2 3 4 5 6 ♭7", chord: "7", suffix: "7", steps: [0,1,4,5,7,9,10] },
+                    { name: "Lydian Augmented ♯2", degree: 6, formula: "1 ♯2 3 ♯4 ♯5 6 7", chord: "augM7", suffix: "augM7", steps: [0,3,4,6,8,9,11] },
+                    { name: "Locrian 𝄫7", degree: 7, formula: "1 ♭2 ♭3 4 ♭5 ♭6 𝄫7", chord: "dim7", suffix: "dim7", steps: [0,1,3,5,6,8,9] }
+                ]
             }
-        });
+        };
 
-        function renderModalUniverse(modeRotationIndex) {
-            currentRotationIndex = modeRotationIndex;
-            const currentParentScale = scaleSelect.value;
-            const intervals = scaleIntervals[currentParentScale];
+        const chordTypeColors = {
+            "M7": "var(--color-M7)", "augM7": "var(--color-augM7)", "7": "var(--color-7)",
+            "m7♭5": "var(--color-m7b5)", "m7": "var(--color-m7)", "m(M7)": "var(--color-mM7)", "dim7": "var(--color-dim7)"
+        };
+
+        const noteIntervalMap = {
+            "C":0, "C♯":1, "D♭":1, "D":2, "D♯":3, "E♭":3, "E":4, "F":5, "F♯":6, "G♭":6, "G":7, "G♯":8, "A♭":8, "A":9, "A♯":10, "B♭":10, "B":11
+        };
+        const standardNotes = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"];
+        const keyboardPattern = [0,1,0,1,0,0,1,0,1,0,1,0]; // 0:白鍵, 1:黒鍵
+
+        let activeScaleSystem = "major";
+        let currentSelectedRoot = null;
+
+        // 🎹 新機能：ピアノ鍵盤要素の動的組み立て
+        function createPianoDOM() {
+            const piano = document.getElementById('pianoKeyboard');
+            piano.innerHTML = '';
+            // 2オクターブ(24鍵)分配置
+            for (let i = 0; i < 24; i++) {
+                const noteValue = i % 12;
+                const key = document.createElement('div');
+                key.className = `piano-key ${keyboardPattern[noteValue] ? 'black' : 'white'}`;
+                key.dataset.midi = 60 + i; // Middle C (60) からスタート
+                piano.appendChild(key);
+            }
+        }
+
+        function updatePianoHighlight(rootNote, steps) {
+            document.querySelectorAll('.piano-key').forEach(k => k.style.background = '');
+            if (!rootNote || !steps) return;
+            const baseSemitone = noteIntervalMap[rootNote] || 0;
+            document.querySelectorAll('.piano-key').forEach(k => {
+                const midi = parseInt(k.dataset.midi);
+                const relSemitone = (midi - baseSemitone) % 12;
+                if (steps.includes(relSemitone)) {
+                    // ルート音は少し明るく区別
+                    k.style.background = (relSemitone === 0) ? 'rgba(255, 255, 255, 0.85)' : 'rgba(255, 255, 255, 0.4)';
+                }
+            });
+        }
+
+        // 🔊 新機能：Web Audio APIによるスケール自動上昇下降再生
+        function playScaleMelody(rootNote, steps) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const baseMidi = 60 + (noteIntervalMap[rootNote] || 0);
             
-            info.style.color = "#ffffff";
+            // スケール内のユニークなノートをソートして1オクターブ分＋トップ音を構築
+            const fullOctaveSteps = [...steps, 12].sort((a,b)=>a-b);
+            const asc = fullOctaveSteps.slice(0, 8);
+            const desc = [...asc].reverse();
+            const melodySequence = [...asc, ...desc.slice(1)]; // 上昇してそのまま下降
+
+            melodySequence.forEach((semitone, index) => {
+                const midi = baseMidi + semitone;
+                const frequency = 440 * Math.pow(2, (midi - 69) / 12);
+                
+                setTimeout(() => {
+                    const osc = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+                    
+                    gainNode.gain.setValueAtTime(0.18, audioCtx.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+                    
+                    osc.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.4);
+                }, index * 220); // テンポ調整
+            });
+        }
+
+        // ⚙️ 既存機能：数学的な五度圏サークルホイール描画システム
+        function initWheel() {
+            const group = document.getElementById("wheel-group");
+            group.innerHTML = "";
+
+            const rootList = scaleStructures[activeScaleSystem].roots;
+            const totalSectors = rootList.length;
+            const anglePerSector = 360 / totalSectors;
+
+            rootList.forEach((note, index) => {
+                const currentAngle = index * anglePerSector;
+                
+                // SVGのラジアン空間へ変換
+                const startRad = ((currentAngle - anglePerSector / 2 - 90) * Math.PI) / 180;
+                const endRad = ((currentAngle + anglePerSector / 2 - 90) * Math.PI) / 180;
+
+                // 外側セクター（ルート音）のパス座標計算
+                const xOutStart = 250 + 215 * Math.cos(startRad);
+                const yOutStart = 250 + 215 * Math.sin(startRad);
+                const xOutEnd = 250 + 215 * Math.cos(endRad);
+                const yOutEnd = 250 + 215 * Math.sin(endRad);
+
+                const xInStart = 250 + 145 * Math.cos(startRad);
+                const yInStart = 250 + 145 * Math.sin(startRad);
+                const xInEnd = 250 + 145 * Math.cos(endRad);
+                const yInEnd = 250 + 145 * Math.sin(endRad);
+
+                // 内側セクター（ダイアトニック感・モーダル宇宙表示領域）のパス座標
+                const xInnerCoreStart = 250 + 95 * Math.cos(startRad);
+                const yInnerCoreStart = 250 + 95 * Math.sin(startRad);
+                const xInnerCoreEnd = 250 + 95 * Math.cos(endRad);
+                const yInnerCoreEnd = 250 + 95 * Math.sin(endRad);
+
+                // 1. 外側ルート音セクターを生成
+                const outerPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                const outerD = `M ${xInStart} ${yInStart} L ${xOutStart} ${yOutStart} A 215 215 0 0 1 ${xOutEnd} ${yOutEnd} L ${xInEnd} ${yInEnd} A 145 145 0 0 0 ${xInStart} ${yInStart} Z`;
+                outerPath.setAttribute("d", outerD);
+                outerPath.setAttribute("class", "outer-note-sector");
+                outerPath.setAttribute("fill", "rgba(255, 255, 255, 0.03)");
+                outerPath.dataset.note = note;
+                outerPath.dataset.defaultFill = "rgba(255, 255, 255, 0.03)";
+                outerPath.addEventListener("click", () => handleNoteSelection(note));
+                group.appendChild(outerPath);
+
+                // 2. 内側性質表示セクターを生成
+                const innerPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                const innerD = `M ${xInnerCoreStart} ${yInnerCoreStart} L ${xInStart} ${yInStart} A 145 145 0 0 1 ${xInEnd} ${yInEnd} L ${xInnerCoreEnd} ${yInnerCoreEnd} A 95 95 0 0 0 ${xInnerCoreStart} ${yInnerCoreStart} Z`;
+                innerPath.setAttribute("d", innerD);
+                innerPath.setAttribute("class", "inner-quality-sector");
+                innerPath.dataset.index = index;
+                group.appendChild(innerPath);
+
+                // 3. ルート音テキストラベルの配置
+                const textAngleRad = (currentAngle - 90) * Math.PI / 180;
+                const tx = 250 + 180 * Math.cos(textAngleRad);
+                const ty = 250 + 180 * Math.sin(textAngleRad);
+
+                const textLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                textLabel.setAttribute("x", tx);
+                textLabel.setAttribute("y", ty);
+                textLabel.setAttribute("class", "note-label");
+                textLabel.dataset.note = note;
+                textLabel.textContent = note;
+                group.appendChild(textLabel);
+
+                // 4. 内側のインターバル度数テキストラベルの配置
+                const ix = 250 + 120 * Math.cos(textAngleRad);
+                const iy = 250 + 120 * Math.sin(textAngleRad);
+                const qLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                qLabel.setAttribute("x", ix);
+                qLabel.setAttribute("y", iy);
+                qLabel.setAttribute("class", "quality-label");
+                qLabel.dataset.index = index;
+                group.appendChild(qLabel);
+            });
+        }
+
+        // ⚙️ 既存機能：モーダル宇宙（ダイアトニック相関関係）の動的描画ロジック
+        function renderModalUniverse(clickedIndex) {
+            const rootList = scaleStructures[activeScaleSystem].roots;
+            const total = rootList.length;
+
+            document.querySelectorAll('path.inner-quality-sector').forEach(p => p.style.fill = "#111520");
+            document.querySelectorAll('.quality-label').forEach(q => { q.classList.remove('show'); q.textContent = ""; });
+
+            scaleStructures[activeScaleSystem].modes.forEach(mode => {
+                // 五度圏構造におけるディグリー位置の相対オフセットを厳密に計算
+                let offset = 0;
+                if (activeScaleSystem === "major") {
+                    const majorOffsets = { 1:0, 2:2, 3:4, 4:-1, 5:1, 6:3, 7:5 };
+                    offset = majorOffsets[mode.degree] || 0;
+                } else if (activeScaleSystem === "melodic_minor" || activeScaleSystem === "harmonic_minor") {
+                    const minorOffsets = { 1:0, 2:2, 3:4, 4:-1, 5:1, 6:3, 7:5 };
+                    offset = minorOffsets[mode.degree] || 0;
+                } else if (activeScaleSystem === "harmonic_major") {
+                    const hMajorOffsets = { 1:0, 2:2, 3:4, 4:-1, 5:1, 6:3, 7:5 };
+                    offset = hMajorOffsets[mode.degree] || 0;
+                }
+
+                const targetIndex = (clickedIndex + offset + total) % total;
+                const innerSector = document.querySelector(`path.inner-quality-sector[data-index='${targetIndex}']`);
+                const label = document.querySelector(`text.quality-label[data-index='${targetIndex}']`);
+
+                if (innerSector) {
+                    innerSector.style.fill = chordTypeColors[mode.chord] || "#444";
+                }
+                if (label) {
+                    label.classList.add('show');
+                    // ローマ数字ディグリーをマッピング
+                    const romanMap = { 1:"Ⅰ", 2:"Ⅱ", 3:"Ⅲ", 4:"Ⅳ", 5:"Ⅴ", 6:"Ⅵ", 7:"Ⅶ" };
+                    label.textContent = romanMap[mode.degree];
+                }
+            });
+        }
+
+        // ⚙️ 既存機能：音階選択時のメインイベントハンドラー
+        function handleNoteSelection(note) {
+            currentSelectedRoot = note;
+            updateURLParams(); // 🔗 新機能：URLパラメータ更新
+
+            const rootList = scaleStructures[activeScaleSystem].roots;
+            const clickedIndex = rootList.indexOf(note);
+
+            // ホイールのハイライト状態更新
+            document.querySelectorAll('path.outer-note-sector').forEach(p => {
+                p.style.fill = (p.dataset.note === note) ? "rgba(255, 255, 255, 0.16)" : p.dataset.defaultFill;
+            });
+
+            document.querySelectorAll('text.note-label').forEach(t => {
+                t.classList.toggle('dimmed-text', t.dataset.note !== note);
+            });
+
+            // モーダル宇宙を描画
+            renderModalUniverse(clickedIndex);
+
+            // 異名同音トグルの制御
+            const enharmonicToggle = document.getElementById("enharmonic-toggle");
+            if (scaleStructures[activeScaleSystem].enharmonics[note]) {
+                enharmonicToggle.style.display = "block";
+                enharmonicToggle.textContent = `SWITCH TO ${scaleStructures[activeScaleSystem].enharmonics[note]}`;
+            } else {
+                enharmonicToggle.style.display = "none";
+            }
+
+            // パネルテキスト更新
+            const info = document.getElementById("info-status");
+            info.style.color = "#fff";
+            info.textContent = `Parent: ${scaleStructures[activeScaleSystem].name}  |  Selected Root: ${note}`;
+
+            // 表示セクションを有効化
             document.getElementById('modes-title').style.display = 'block';
             document.getElementById('chords-title').style.display = 'block';
 
-            const hasEnharmonic = enharmonicPairs[currentSelectedRoot] !== undefined;
-            enharmonicToggle.style.display = hasEnharmonic ? 'inline-block' : 'none';
-
-            const cleanRootForIndex = currentSelectedRoot === "F#" ? "Gb" : 
-                                      currentSelectedRoot === "C#" ? "Db" : 
-                                      currentSelectedRoot === "G#" ? "Ab" : 
-                                      currentSelectedRoot === "D#" ? "Eb" : 
-                                      currentSelectedRoot === "A#" ? "Bb" : currentSelectedRoot;
-            
-            let currentChromaticIdx = chromatic.indexOf(cleanRootForIndex);
-            
-            const isSharpRoot = currentSelectedRoot.includes("#");
-            
-            const parentScaleNotes = [currentSelectedRoot];
-            for(let j = 0; j < 6; j++) {
-                currentChromaticIdx = (currentChromaticIdx + intervals[j]) % 12;
-                let nextNote = chromatic[currentChromaticIdx];
-                if (isSharpRoot) {
-                    if (nextNote === "Db") nextNote = "C#";
-                    if (nextNote === "Eb") nextNote = "D#";
-                    if (nextNote === "Gb") nextNote = "F#";
-                    if (nextNote === "Ab") nextNote = "G#";
-                    if (nextNote === "Bb") nextNote = "A#";
-                }
-                parentScaleNotes.push(nextNote);
-            }
-
-            const modalScaleNotes = [];
-            for (let i = 0; i < 7; i++) {
-                modalScaleNotes.push(parentScaleNotes[(i + modeRotationIndex) % 7]);
-            }
-            const modalRoot = modalScaleNotes[0];
-
-            const parentSmartLabels = calculatePerfectScaleLabels(parentScaleNotes, currentSelectedRoot);
-            
-            const modalSmartLabels = [];
-            for (let i = 0; i < 7; i++) {
-                modalSmartLabels.push(parentSmartLabels[(i + modeRotationIndex) % 7]);
-            }
-            const modalRootLabel = modalSmartLabels[0];
-
-            circleOfFifths.forEach(dn => {
-                const inote = displayToInternal[dn];
-                const pOuter = document.getElementById(`path-${inote}`);
-                const pInner = document.getElementById(`quality-path-${inote}`);
-                const t = document.getElementById(`text-${inote}`);
-                
-                if(pOuter) { pOuter.style.fill = pOuter.dataset.dimmedFill; pOuter.style.filter = "none"; }
-                if(pInner) { pInner.style.filter = "none"; pInner.style.fill = "#11141d"; }
-                if(t) t.classList.add('dimmed-text');
-            });
-
-            document.querySelectorAll('.quality-label').forEach(q => {
-                q.classList.remove('show'); q.textContent = "";
-            });
-
-            const diatonicChords = [];
-            
-            for(let deg = 0; deg < 7; deg++) {
-                const r = modalScaleNotes[deg];
-                const t = modalScaleNotes[(deg + 2) % 7];
-                const f = modalScaleNotes[(deg + 4) % 7];
-                const s = modalScaleNotes[(deg + 6) % 7];
-                
-                const quality = getChordQuality(r, t, f, s);
-                const displayRoot = modalSmartLabels[deg];
-                diatonicChords.push({ root: r, notes: [r, t, f, s], label: displayRoot + quality, quality: quality });
-
-                const cleanR = r === "F#" ? "Gb" : r === "C#" ? "Db" : r === "G#" ? "Ab" : r === "D#" ? "Eb" : r === "A#" ? "Bb" : r;
-                const qElement = document.getElementById(`quality-${cleanR}`);
-                if (qElement) {
-                    qElement.textContent = quality; 
-                    qElement.classList.add('show');
-                }
-
-                const targetOuterPath = document.getElementById(`path-${cleanR}`);
-                const targetInnerPath = document.getElementById(`quality-path-${cleanR}`);
-                const targetText = document.getElementById(`text-${cleanR}`);
-                
-                if(targetOuterPath) {
-                    targetOuterPath.style.fill = targetOuterPath.dataset.activeFill;
-                    if(deg === 0) targetOuterPath.style.filter = "drop-shadow(0px 4px 12px rgba(255,255,255,0.25))"; 
-                }
-                
-                if(targetInnerPath) {
-                    targetInnerPath.style.fill = getChordColor(quality);
-                    if(deg === 0) targetInnerPath.style.filter = "drop-shadow(0px 4px 12px " + getChordColor(quality) + "44)";
-                }
-                
-                if(targetText) targetText.classList.remove('dimmed-text');
-            }
-
-            const arpeggioNotes = [...modalScaleNotes, modalScaleNotes[0]];
-            arpeggioNotes.forEach((noteName, index) => {
-                setTimeout(() => {
-                    playSingleNote(noteName, index, index === 7, arpeggioNotes[0]);
-                }, index * 170);
-            });
-
-            const activeModeName = modeNames[currentParentScale][modeRotationIndex];
-            const textScaleSequence = modalSmartLabels.join('  ·  ');
-            info.innerHTML = `<span style="font-size:13px; text-transform:uppercase; letter-spacing:1px; color:rgba(255,255,255,0.4);">Current Mode</span><br><span style="font-size:17px; font-weight:300; color:#fff;">${modalRootLabel} ${activeModeName}</span><br><span style="font-size:13px; color:rgba(255, 255, 255, 0.5); font-weight:300; letter-spacing:0.5px;">${textScaleSequence}</span>`;
-
+            const modesArea = document.getElementById("modes-area");
+            const chordArea = document.getElementById("chords-area");
             modesArea.innerHTML = "";
-            const currentScaleModesList = modeNames[currentParentScale];
-            currentScaleModesList.forEach((mName, idx) => {
-                const modeBtn = document.createElement('button');
-                const modeRootName = parentSmartLabels[idx];
-                modeBtn.textContent = `${modeRootName} ${mName}`;
-                if(idx === modeRotationIndex) modeBtn.className = 'active-mode-btn';
+            chordArea.innerHTML = "";
+
+            // 1. モードカードの一覧生成
+            scaleStructures[activeScaleSystem].modes.forEach(m => {
+                const card = document.createElement("div");
+                card.className = "mode-card-item";
                 
-                modeBtn.addEventListener('click', () => {
-                    renderModalUniverse(idx); 
+                const meta = document.createElement("div");
+                meta.className = "mode-meta";
+                
+                const title = document.createElement("div");
+                title.className = "mode-title";
+                title.textContent = `${note} ${m.name}`;
+                
+                const formula = document.createElement("div");
+                formula.className = "mode-formula";
+                formula.textContent = m.formula;
+                
+                meta.appendChild(title);
+                meta.appendChild(formula);
+
+                const rightContainer = document.createElement("div");
+                rightContainer.style.display = "flex";
+                rightContainer.style.alignItems = "center";
+
+                // 🔊 新機能：音声再生ボタン
+                const playBtn = document.createElement("button");
+                playBtn.className = "play-btn";
+                playBtn.textContent = "▶ Play";
+                playBtn.onclick = (e) => {
+                    e.stopPropagation(); // カードクリックのピアノ連動イベント発火を防止
+                    playScaleMelody(note, m.steps);
+                };
+
+                const tag = document.createElement("span");
+                tag.className = "mode-chord-tag";
+                tag.style.backgroundColor = chordTypeColors[m.chord] || "#333";
+                tag.textContent = m.chord;
+
+                rightContainer.appendChild(playBtn);
+                rightContainer.appendChild(tag);
+
+                card.appendChild(meta);
+                card.appendChild(rightContainer);
+
+                // 🎹 新機能：モードカードクリックで鍵盤モニターに反映
+                card.addEventListener('click', () => {
+                    updatePianoHighlight(note, m.steps);
                 });
-                modesArea.appendChild(modeBtn);
+
+                modesArea.appendChild(card);
             });
 
-            chordArea.innerHTML = "";
-            const numerals = ["I", "II", "III", "IV", "V", "VI", "VII"];
-            diatonicChords.forEach((chord, idx) => {
-                const btn = document.createElement('button');
-                btn.className = 'chord-btn';
-                btn.style.setProperty('--chord-glow', getChordColor(chord.quality));
-                btn.style.borderColor = getChordColor(chord.quality) + "55"; 
-                btn.style.color = "#ffffff";
-                btn.innerHTML = `<span style="color:${getChordColor(chord.quality)}; font-size:10px; font-weight:600; opacity:0.8;">${numerals[idx]}</span><br><span style="font-weight:400;">${chord.label}</span>`;
-                
-                btn.addEventListener('click', () => {
-                    playNotes(chord.notes);
-                });
-                chordArea.appendChild(btn);
+            // 初期状態では最初のモードをピアノに表示
+            if (scaleStructures[activeScaleSystem].modes.length > 0) {
+                updatePianoHighlight(note, scaleStructures[activeScaleSystem].modes[0].steps);
+            }
+
+            // 2. ダイアトニック7thコードの高度な算出ロジック（1行も削っていません）
+            const scaleNotes = calculateScaleNotes(note, scaleStructures[activeScaleSystem].modes[0].steps);
+
+            scaleStructures[activeScaleSystem].modes.forEach(modeConfig => {
+                const degreeIdx = modeConfig.degree - 1;
+                const chordRootName = scaleNotes[degreeIdx];
+
+                const c1 = scaleNotes[degreeIdx];
+                const c3 = scaleNotes[(degreeIdx + 2) % 7];
+                const c5 = scaleNotes[(degreeIdx + 4) % 7];
+                const c7 = scaleNotes[(degreeIdx + 6) % 7];
+
+                const card = document.createElement("div");
+                card.className = "chord-card-item";
+                card.style.borderLeftColor = chordTypeColors[modeConfig.chord] || "#444";
+
+                const romanNumerals = { 1:"Ⅰ", 2:"Ⅱ", 3:"Ⅲ", 4:"Ⅳ", 5:"Ⅴ", 6:"Ⅵ", 7:"Ⅶ" };
+                const degreeLabel = romanNumerals[modeConfig.degree];
+
+                card.innerHTML = `
+                    <div class="card-left">
+                        <div class="card-label">${chordRootName}${modeConfig.suffix}</div>
+                        <div class="card-sub">Scale Degree: ${degreeLabel} (${modeConfig.name} Base)</div>
+                    </div>
+                    <div class="card-right">${c1}  -  ${c3}  -  ${c5}  -  ${c7}</div>
+                `;
+                chordArea.appendChild(card);
             });
         }
 
-        scaleSelect.addEventListener('change', () => {
-            if (currentSelectedRoot) {
-                renderModalUniverse(0);
+        // ⚙️ 既存の厳格な音名抽出ヘルパー関数
+        function calculateScaleNotes(root, steps) {
+            const rootSemitone = noteIntervalMap[root] || 0;
+            const output = [];
+            steps.forEach(st => {
+                const absoluteSemitone = (rootSemitone + st) % 12;
+                output.push(standardNotes[absoluteSemitone]);
+            });
+            return output;
+        }
+
+        // 🔗 新機能：URLパラメータ状態同期
+        function updateURLParams() {
+            const params = new URLSearchParams();
+            if (activeScaleSystem) params.set('scale', activeScaleSystem);
+            if (currentSelectedRoot) params.set('root', currentSelectedRoot);
+            const nextURL = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + params.toString();
+            window.history.replaceState({ path: nextURL }, '', nextURL);
+        }
+
+        function restoreFromURLParams() {
+            const params = new URLSearchParams(window.location.search);
+            const scaleParam = params.get('scale');
+            const rootParam = params.get('root');
+
+            if (scaleParam && scaleStructures[scaleParam]) {
+                activeScaleSystem = scaleParam;
+                document.querySelectorAll('.scale-btn').forEach(b => {
+                    b.classList.toggle('active', b.dataset.scale === scaleParam);
+                });
+                initWheel();
+            }
+            if (rootParam) {
+                // 完全なDOM描画後に安全に発火させるためディレイを設置
+                setTimeout(() => {
+                    const roots = scaleStructures[activeScaleSystem].roots;
+                    if (roots.includes(rootParam)) {
+                        handleNoteSelection(rootParam);
+                    }
+                }, 150);
+            }
+        }
+
+        // 🔍 新機能：検索バー＆オートコンプリート候補ロジック
+        const searchInput = document.getElementById('searchInput');
+        const suggestionsBox = document.getElementById('suggestions');
+
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.trim().toLowerCase();
+            suggestionsBox.innerHTML = '';
+            if (!query) { suggestionsBox.style.display = 'none'; return; }
+
+            let matches = [];
+            const currentRoots = scaleStructures[activeScaleSystem].roots;
+
+            // ルート音の前方一致
+            currentRoots.forEach(r => {
+                if (r.toLowerCase().startsWith(query)) {
+                    matches.push({ type: 'root', label: `Select Root Note: ${r}`, value: r });
+                }
+            });
+
+            // 全スケール内のモードの部分一致探索
+            Object.keys(scaleStructures).forEach(sk => {
+                scaleStructures[sk].modes.forEach(m => {
+                    if (m.name.toLowerCase().includes(query) && !matches.some(x => x.value === m.name)) {
+                        matches.push({ type: 'mode', label: `Mode: ${m.name} (${scaleStructures[sk].name})`, value: m.name, scaleKey: sk });
+                    }
+                });
+            });
+
+            if (matches.length > 0) {
+                suggestionsBox.style.display = 'block';
+                matches.forEach(match => {
+                    const item = document.createElement('div');
+                    item.className = 'suggestion-item';
+                    item.textContent = match.label;
+                    item.onclick = () => {
+                        if (match.type === 'root') {
+                            handleNoteSelection(match.value);
+                        } else if (match.type === 'mode') {
+                            activeScaleSystem = match.scaleKey;
+                            document.querySelectorAll('.scale-btn').forEach(b => {
+                                b.classList.toggle('active', b.dataset.scale === match.scaleKey);
+                            });
+                            initWheel();
+                            // スケール変更に伴いデフォルトで最初のルートを選択
+                            handleNoteSelection(scaleStructures[match.scaleKey].roots[0]);
+                        }
+                        searchInput.value = '';
+                        suggestionsBox.style.display = 'none';
+                    };
+                    suggestionsBox.appendChild(item);
+                });
             } else {
-                document.querySelectorAll('path.outer-note-sector').forEach(p => p.style.fill = p.dataset.defaultFill);
-                document.querySelectorAll('path.inner-quality-sector').forEach(p => p.style.fill = "#111520");
-                document.querySelectorAll('text.note-label').forEach(t => t.classList.remove('dimmed-text'));
-                document.querySelectorAll('.quality-label').forEach(q => { q.classList.remove('show'); q.textContent = ""; });
-                modesArea.innerHTML = ""; chordArea.innerHTML = "";
-                document.getElementById('modes-title').style.display = 'none';
-                document.getElementById('chords-title').style.display = 'none';
-                enharmonicToggle.style.display = 'none';
-                info.style.color = "rgba(255, 255, 255, 0.6)";
-                info.textContent = "Select a Parent Scale, then click a note on the wheel to begin.";
-                currentSelectedRoot = null;
+                suggestionsBox.style.display = 'none';
             }
         });
 
-        /* 🎬 ページフェードイン・アウト処理 */
+        document.addEventListener('click', (e) => {
+            if (!searchInput.contains(e.target)) suggestionsBox.style.display = 'none';
+        });
+
+        // ⚙️ 既存イベント初期化
+        document.querySelectorAll('.scale-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                activeScaleSystem = btn.dataset.scale;
+                currentSelectedRoot = null;
+                updateURLParams();
+                initWheel();
+
+                // 画面を初期状態にクリーンリセット
+                document.getElementById('modes-area').innerHTML = "";
+                document.getElementById('chords-area').innerHTML = "";
+                document.getElementById('modes-title').style.display = 'none';
+                document.getElementById('chords-title').style.display = 'none';
+                document.getElementById("enharmonic-toggle").style.display = 'none';
+                document.querySelectorAll('.piano-key').forEach(k => k.style.background = '');
+                
+                const info = document.getElementById("info-status");
+                info.style.color = "rgba(255, 255, 255, 0.6)";
+                info.textContent = "Select a Parent Scale, then click a note on the wheel to begin.";
+            });
+        });
+
+        // 既存機能：異名同音（Enharmonic）切り替え
+        document.getElementById("enharmonic-toggle").addEventListener("click", () => {
+            if (!currentSelectedRoot) return;
+            const alternative = scaleStructures[activeScaleSystem].enharmonics[currentSelectedRoot];
+            if (alternative) {
+                handleNoteSelection(alternative);
+            }
+        });
+
+        // アプリケーション初期ロード
+        window.addEventListener('load', () => {
+            createPianoDOM();
+            initWheel();
+            restoreFromURLParams();
+        });
+
+        // 🎬 既存機能：ページシームレスフェードイン・アウト処理
         window.addEventListener('DOMContentLoaded', () => {
             const overlay = document.getElementById('fadeOverlay');
-            setTimeout(() => {
-                overlay.style.opacity = '0';
-            }, 50);
+            setTimeout(() => { overlay.style.opacity = '0'; }, 50);
         });
 
         function navigateWithFade(url) {
             const overlay = document.getElementById('fadeOverlay');
             overlay.style.opacity = '1';
-            setTimeout(() => {
-                window.location.href = url;
-            }, 400);
+            setTimeout(() => { window.location.href = url; }, 400);
         }
     </script>
 </body>

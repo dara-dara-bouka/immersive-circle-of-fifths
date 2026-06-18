@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>28 Modes Dynamic Network Map</title>
     <style>
-        /* index.htmlと共通の数値型カスタムプロパティ定義 */
+        /* index.htmlと完全に共通化された数値型カスタムプロパティ（シームレスオーロラ） */
         @property --x1 { syntax: '<percentage>'; inherits: false; initial-value: 30%; }
         @property --y1 { syntax: '<percentage>'; inherits: false; initial-value: -10%; }
         @property --x2 { syntax: '<percentage>'; inherits: false; initial-value: 85%; }
@@ -67,36 +67,6 @@
             z-index: 1;
         }
 
-        h1, p, .controls, .map-container, .legend, .nav-btn {
-            position: relative;
-            z-index: 2;
-        }
-
-        h1 { 
-            font-weight: 200; 
-            letter-spacing: 4px; 
-            font-size: 26px; 
-            margin: 0 0 8px 0; 
-            color: #ffffff;
-            text-align: center;
-            text-shadow: 0 4px 15px rgba(0,0,0,0.6);
-        }
-        
-        @media (max-width: 768px) {
-            h1 { font-size: 20px; letter-spacing: 2px; margin-top: 40px; }
-            p { font-size: 11px; }
-            .controls { scale: 0.9; margin-bottom: 15px; }
-        }
-
-        p { 
-            font-size: 13px; 
-            color: rgba(255,255,255,0.6); 
-            margin: 0 0 20px 0; 
-            text-align: center; 
-            max-width: 800px;
-            letter-spacing: 0.2px;
-        }
-
         .nav-btn {
             position: fixed;
             top: 20px;
@@ -113,78 +83,79 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             letter-spacing: 1px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.3s;
             cursor: pointer;
         }
         .nav-btn:hover {
-            color: #ffffff;
-            background-color: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            background: rgba(255, 255, 255, 0.08);
             border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.4);
         }
 
-        @media (max-width: 768px) {
-            .nav-btn { top: 10px; right: 10px; padding: 6px 12px; font-size: 10px; }
+        h1 {
+            font-weight: 200;
+            letter-spacing: 4px;
+            font-size: 26px;
+            margin: 0 0 8px 0;
+            color: #fff;
+            text-align: center;
+        }
+
+        p {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.4);
+            margin: 0 0 25px 0;
+            text-align: center;
+            max-width: 800px;
+            line-height: 1.5;
         }
 
         .controls {
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             display: flex;
             gap: 12px;
             align-items: center;
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.02);
             padding: 6px;
             border-radius: 30px;
             border: 1px solid var(--border-alpha);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            z-index: 10;
         }
 
         .btn {
             background: transparent;
             border: none;
-            color: rgba(255,255,255,0.65);
-            padding: 8px 18px;
+            color: rgba(255, 255, 255, 0.55);
+            padding: 8px 20px;
             font-size: 13px;
             font-weight: 400;
             border-radius: 20px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .btn:hover {
-            color: #ffffff;
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-        .btn.active {
-            background-color: rgba(255, 255, 255, 0.93);
-            border-color: #ffffff;
-            color: #080a0f;
-            font-weight: 500;
-            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.12);
+            transition: all 0.3s;
         }
 
-        /* スマホ縮小対応のためのコンテナ構造 */
+        .btn.active {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #080a0f;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+        }
+
         .map-container {
             width: 100%;
             max-width: 1400px;
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            overflow: visible;
         }
 
-        /* 縮小後の実サイズを計算してセンタリングを保証する外枠 */
         .map-scale-shield {
             position: relative;
             overflow: visible;
             display: flex;
-            justify-content: flex-start;
-            align-items: flex-start;
         }
 
-        /* 起点を top left に固定し縮小 */
         .map-wrapper {
             position: absolute;
             top: 0;
@@ -192,7 +163,7 @@
             width: 1400px;
             height: 1450px;
             user-select: none;
-            transform-origin: top left; 
+            transform-origin: top left;
         }
 
         .column-headers {
@@ -204,17 +175,17 @@
             grid-template-columns: repeat(4, 1fr);
             text-align: center;
             pointer-events: none;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.4s ease;
         }
+
         .col-title {
             font-size: 11px;
             font-weight: 600;
             letter-spacing: 2px;
-            color: rgba(255,255,255,0.35);
-            border-bottom: 1px dashed rgba(255,255,255,0.05);
-            padding-bottom: 10px;
+            color: rgba(255, 255, 255, 0.25);
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+            padding-bottom: 12px;
             margin: 0 40px;
-            text-transform: uppercase;
         }
 
         #edge-svg {
@@ -236,88 +207,112 @@
             padding: 12px 10px;
             box-sizing: border-box;
             text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             z-index: 2;
             cursor: grab;
-            transition: left 0.6s cubic-bezier(0.16, 1, 0.3, 1), top 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s;
+            transition: left 0.65s cubic-bezier(0.16, 1, 0.3, 1), top 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s;
         }
         .mode-card:active {
             cursor: grabbing;
-        }
-        .mode-card:hover {
-            transform: scale(1.04);
-            background-color: rgba(28, 15, 22, 0.9); 
-            z-index: 10;
+            transform: scale(1.02);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
         }
 
-        .mode-name { font-weight: 500; font-size: 14px; margin-bottom: 4px; color: #ffffff; letter-spacing: -0.2px;}
-        .mode-degrees { font-size: 11px; letter-spacing: 0.5px; color: rgba(255,255,255,0.85); margin-bottom: 5px; white-space: nowrap; font-weight: 400;}
-        .mode-parent { font-size: 9px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 1px; font-weight: 600;}
+        .mode-name {
+            font-weight: 500;
+            font-size: 14px;
+            margin-bottom: 4px;
+            color: #fff;
+        }
 
-        /* PCでの凡例（通常表示） */
+        .mode-degrees {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 6px;
+            font-family: monospace;
+        }
+
+        .mode-parent {
+            font-size: 9px;
+            color: rgba(255, 255, 255, 0.3);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* 既存機能：スマホ対応のための2列コンパクトレイアウト凡例構造 */
         .legend {
             position: fixed;
             bottom: 20px;
             left: 20px;
-            background: rgba(8, 3, 6, 0.9);
+            background: rgba(8, 3, 6, 0.85);
             border: 1px solid var(--border-alpha);
             padding: 14px;
             border-radius: 10px;
             font-size: 11px;
             z-index: 100;
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             display: flex;
             flex-direction: column;
             gap: 6px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+        }
+        .legend-title {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
         }
         .legend-list {
             display: flex;
             flex-direction: column;
             gap: 6px;
         }
-        .legend-item { display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.7);}
-        .legend-color { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
 
-        /* 🛠️ スマホ画面（幅768px以下）で2列グリッドにして超コンパクト化 */
         @media (max-width: 768px) {
-            .legend { 
-                padding: 6px 8px; 
-                bottom: 12px; 
-                left: 12px; 
-                max-width: 135px; /* 横幅を最適化 */
-                gap: 2px;
-                background: rgba(8, 3, 6, 0.95);
+            .legend {
+                padding: 8px 10px;
+                bottom: 12px;
+                left: 12px;
+                max-width: 140px;
+                background: rgba(8, 3, 6, 0.92);
             }
             .legend-title {
-                font-size: 9px !important;
-                letter-spacing: 0px !important;
-                margin-bottom: 2px !important;
-                opacity: 0.5;
+                font-size: 9px;
+                margin-bottom: 2px;
             }
-            /* 縦並びから2列のグリッド配置に変更 */
             .legend-list {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
-                gap: 3px 6px;
+                gap: 4px 8px;
             }
-            .legend-item { 
-                font-size: 9px; 
-                gap: 4px; 
+            .legend-item {
+                font-size: 9px;
+                gap: 4px;
             }
-            .legend-color { 
-                width: 7px; 
-                height: 7px; 
-                border-radius: 1px; 
+            .legend-color {
+                width: 8px;
+                height: 8px;
+                border-radius: 2px;
             }
         }
 
         .fade-overlay {
             position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
             background-color: #080306;
             z-index: 10000;
             pointer-events: none;
@@ -327,13 +322,11 @@
     </style>
 </head>
 <body>
-
     <div class="fade-overlay" id="fadeOverlay"></div>
-
     <button onclick="navigateWithFade('index.html')" class="nav-btn">➔ BACK TO WHEEL</button>
 
     <h1>28 Modes Network Map</h1>
-    <p>Drag any card freely to explore linkages. Automatically expands each mode into an optimized, overlap-free dynamic matrix based on tonality levels.</p>
+    <p>Explore links between structural changes. Distance-weighted connection thickness active.</p>
 
     <div class="controls">
         <button class="btn active" id="btn-grid" onclick="changeLayout('grid')">By Parent Scale (Grid)</button>
@@ -349,14 +342,13 @@
                     <div class="col-title">HARMONIC MINOR</div>
                     <div class="col-title">HARMONIC MAJOR</div>
                 </div>
-
                 <svg id="edge-svg"></svg>
             </div>
         </div>
     </div>
 
     <div class="legend">
-        <div class="legend-title" style="font-weight: 600; margin-bottom: 4px; color: #fff; letter-spacing: 0.5px;">Chord Colors (Ⅰ)</div>
+        <div class="legend-title">Chord Colors</div>
         <div class="legend-list">
             <div class="legend-item"><div class="legend-color" style="background:var(--color-M7);"></div>M7</div>
             <div class="legend-item"><div class="legend-color" style="background:var(--color-augM7);"></div>augM7</div>
@@ -369,52 +361,49 @@
     </div>
 
     <script>
+        // 🎼 すべての28モードの配置座標・構造配列（1データも漏らさず維持）
         const modesData = [
-            // Major Scale
             { id: "m1_4", name: "Lydian", parent: "Major", degrees: "Ⅰ Ⅱ Ⅲ ♯Ⅳ Ⅴ Ⅵ Ⅶ", semitones: [0, 2, 4, 6, 7, 9, 11], chord: "M7", gridX: 60, gridY: 130, lineLevel: 2 },
-            { id: "m1_1", name: "Ionian", parent: "Major", degrees: "Ⅰ Ⅱ Ⅲ Ⅳ Ⅴ Ⅵ Ⅶ", semitones: [0, 2, 4, 5, 7, 9, 11], chord: "M7", gridX: 60, gridY: 220, lineLevel: 3 },
-            { id: "m1_5", name: "Mixolydian", parent: "Major", degrees: "Ⅰ Ⅱ Ⅲ Ⅳ Ⅴ Ⅵ ♭Ⅶ", semitones: [0, 2, 4, 5, 7, 9, 10], chord: "7", gridX: 60, gridY: 340, lineLevel: 4 },
-            { id: "m1_2", name: "Dorian", parent: "Major", degrees: "Ⅰ Ⅱ ♭Ⅲ Ⅳ Ⅴ Ⅵ ♭Ⅶ", semitones: [0, 2, 3, 5, 7, 9, 10], chord: "m7", gridX: 60, gridY: 460, lineLevel: 5 },
-            { id: "m1_6", name: "Aeolian", parent: "Major", degrees: "Ⅰ Ⅱ ♭Ⅲ Ⅳ Ⅴ ♭Ⅵ ♭Ⅶ", semitones: [0, 2, 3, 5, 7, 8, 10], chord: "m7", gridX: 60, gridY: 580, lineLevel: 6 },
-            { id: "m1_3", name: "Phrygian", parent: "Major", degrees: "Ⅰ ♭Ⅱ ♭Ⅲ Ⅳ Ⅴ ♭Ⅵ ♭Ⅶ", semitones: [0, 1, 3, 5, 7, 8, 10], chord: "m7", gridX: 60, gridY: 700, lineLevel: 7 },
-            { id: "m1_7", name: "Locrian", parent: "Major", degrees: "Ⅰ ♭Ⅱ ♭Ⅲ Ⅳ ♭Ⅴ ♭Ⅵ ♭Ⅶ", semitones: [0, 1, 3, 5, 6, 8, 10], chord: "m7♭5", gridX: 60, gridY: 820, lineLevel: 8 },
-
-            // Melodic Minor
+            { id: "m1_1", name: "Ionian", parent: "Major", degrees: "Ⅰ Ⅱ Ⅲ Ⅳ Ⅴ Ⅵ Ⅶ", semitones: [0, 2, 4, 5, 7, 9, 11], chord: "M7", gridX: 60, gridY: 250, lineLevel: 3 },
+            { id: "m1_5", name: "Mixolydian", parent: "Major", degrees: "Ⅰ Ⅱ Ⅲ Ⅳ Ⅴ Ⅵ ♭Ⅶ", semitones: [0, 2, 4, 5, 7, 9, 10], chord: "7", gridX: 60, gridY: 370, lineLevel: 4 },
+            { id: "m1_2", name: "Dorian", parent: "Major", degrees: "Ⅰ Ⅱ ♭Ⅲ Ⅳ Ⅴ Ⅵ ♭Ⅶ", semitones: [0, 2, 3, 5, 7, 9, 10], chord: "m7", gridX: 60, gridY: 490, lineLevel: 5 },
+            { id: "m1_6", name: "Aeolian", parent: "Major", degrees: "Ⅰ Ⅱ ♭Ⅲ Ⅳ Ⅴ ♭Ⅵ ♭Ⅶ", semitones: [0, 2, 3, 5, 7, 8, 10], chord: "m7", gridX: 60, gridY: 610, lineLevel: 6 },
+            { id: "m1_3", name: "Phrygian", parent: "Major", degrees: "Ⅰ ♭Ⅱ ♭Ⅲ Ⅳ Ⅴ ♭Ⅵ ♭Ⅶ", semitones: [0, 1, 3, 5, 7, 8, 10], chord: "m7", gridX: 60, gridY: 730, lineLevel: 7 },
+            { id: "m1_7", name: "Locrian", parent: "Major", degrees: "Ⅰ ♭Ⅱ ♭Ⅲ Ⅳ ♭Ⅴ ♭Ⅵ ♭Ⅶ", semitones: [0, 1, 3, 5, 6, 8, 10], chord: "m7♭5", gridX: 60, gridY: 850, lineLevel: 8 },
+            
             { id: "m2_3", name: "Lydian Augmented", parent: "Melodic Minor", degrees: "Ⅰ Ⅱ Ⅲ ♯Ⅳ ♯Ⅴ Ⅵ Ⅶ", semitones: [0, 2, 4, 6, 8, 9, 11], chord: "augM7", gridX: 390, gridY: 40, lineLevel: 1 },
-            { id: "m2_4", name: "Lydian Dominant", parent: "Melodic Minor", degrees: "Ⅰ Ⅱ Ⅲ ♯Ⅳ Ⅴ Ⅵ ♭Ⅶ", semitones: [0, 2, 4, 6, 7, 9, 10], chord: "7", gridX: 390, gridY: 140, lineLevel: 2 },
+            { id: "m2_4", name: "Lydian Dominant", parent: "Melodic Minor", degrees: "Ⅰ Ⅱ Ⅲ ♯Ⅳ Ⅴ Ⅵ ♭Ⅶ", semitones: [0, 2, 4, 6, 7, 9, 10], chord: "7", gridX: 390, gridY: 160, lineLevel: 2 },
             { id: "m2_1", name: "Melodic Minor", parent: "Melodic Minor", degrees: "Ⅰ Ⅱ ♭Ⅲ Ⅳ Ⅴ Ⅵ Ⅶ", semitones: [0, 2, 3, 5, 7, 9, 11], chord: "m(M7)", gridX: 390, gridY: 280, lineLevel: 3 },
             { id: "m2_5", name: "Mixolydian ♭6", parent: "Melodic Minor", degrees: "Ⅰ Ⅱ Ⅲ Ⅳ Ⅴ ♭Ⅵ ♭Ⅶ", semitones: [0, 2, 4, 5, 7, 8, 10], chord: "7", gridX: 390, gridY: 400, lineLevel: 5 },
             { id: "m2_2", name: "Dorian ♭2", parent: "Melodic Minor", degrees: "Ⅰ ♭Ⅱ ♭Ⅲ Ⅳ Ⅴ Ⅵ ♭Ⅶ", semitones: [0, 1, 3, 5, 7, 9, 10], chord: "m7", gridX: 390, gridY: 520, lineLevel: 6 },
             { id: "m2_6", name: "Locrian ♮2", parent: "Melodic Minor", degrees: "Ⅰ Ⅱ ♭Ⅲ Ⅳ ♭Ⅴ ♭Ⅵ ♭Ⅶ", semitones: [0, 2, 3, 5, 6, 8, 10], chord: "m7♭5", gridX: 390, gridY: 640, lineLevel: 7 },
             { id: "m2_7", name: "Superlocrian", parent: "Melodic Minor", degrees: "Ⅰ ♭Ⅱ ♭Ⅲ ♭Ⅳ ♭Ⅴ ♭Ⅵ ♭Ⅶ", semitones: [0, 1, 3, 4, 6, 8, 10], chord: "m7♭5", gridX: 390, gridY: 760, lineLevel: 9 },
-
-            // Harmonic Minor
+            
             { id: "m3_3", name: "Ionian Augmented", parent: "Harmonic Minor", degrees: "Ⅰ Ⅱ Ⅲ Ⅳ ♯Ⅴ Ⅵ Ⅶ", semitones: [0, 2, 4, 5, 8, 9, 11], chord: "augM7", gridX: 720, gridY: 60, lineLevel: 2 },
-            { id: "m3_6", name: "Lydian ♯2", parent: "Harmonic Minor", degrees: "Ⅰ ♯Ⅱ Ⅲ ♯Ⅳ Ⅴ Ⅵ Ⅶ", semitones: [0, 3, 4, 6, 7, 9, 11], chord: "M7", gridX: 720, gridY: 160, lineLevel: 1 },
+            { id: "m3_6", name: "Lydian ♯2", parent: "Harmonic Minor", degrees: "Ⅰ ♯Ⅱ Ⅲ ♯Ⅳ Ⅴ Ⅵ Ⅶ", semitones: [0, 3, 4, 6, 7, 9, 11], chord: "M7", gridX: 720, gridY: 180, lineLevel: 1 },
             { id: "m3_4", name: "Dorian ♯4", parent: "Harmonic Minor", degrees: "Ⅰ Ⅱ ♭Ⅲ ♯Ⅳ Ⅴ Ⅵ ♭Ⅶ", semitones: [0, 2, 3, 6, 7, 9, 10], chord: "m7", gridX: 720, gridY: 300, lineLevel: 4 },
             { id: "m3_1", name: "Harmonic Minor", parent: "Harmonic Minor", degrees: "Ⅰ Ⅱ ♭Ⅲ Ⅳ Ⅴ ♭Ⅵ Ⅶ", semitones: [0, 2, 3, 5, 7, 8, 11], chord: "m(M7)", gridX: 720, gridY: 420, lineLevel: 4 },
             { id: "m3_5", name: "Phrygian Dominant", parent: "Harmonic Minor", degrees: "Ⅰ ♭Ⅱ Ⅲ Ⅳ Ⅴ ♭Ⅵ ♭Ⅶ", semitones: [0, 1, 4, 5, 7, 8, 10], chord: "7", gridX: 720, gridY: 540, lineLevel: 6 },
             { id: "m3_2", name: "Locrian ♮6", parent: "Harmonic Minor", degrees: "Ⅰ ♭Ⅱ ♭Ⅲ Ⅳ ♭Ⅴ Ⅵ ♭Ⅶ", semitones: [0, 1, 3, 5, 6, 9, 10], chord: "m7♭5", gridX: 720, gridY: 660, lineLevel: 8 },
             { id: "m3_7", name: "Ultralocrian", parent: "Harmonic Minor", degrees: "Ⅰ ♭Ⅱ ♭Ⅲ ♭Ⅳ ♭Ⅴ ♭Ⅵ 𝄫Ⅶ", semitones: [0, 1, 3, 4, 6, 8, 9], chord: "dim7", gridX: 720, gridY: 780, lineLevel: 11 },
-
-            // Harmonic Major
+            
             { id: "m4_6", name: "Lydian Augmented ♯2", parent: "Harmonic Major", degrees: "Ⅰ ♯Ⅱ Ⅲ ♯Ⅳ ♯Ⅴ Ⅵ Ⅶ", semitones: [0, 3, 4, 6, 8, 9, 11], chord: "augM7", gridX: 1050, gridY: 80, lineLevel: 0 },
             { id: "m4_1", name: "Harmonic Major", parent: "Harmonic Major", degrees: "Ⅰ Ⅱ Ⅲ Ⅳ Ⅴ ♭Ⅵ Ⅶ", semitones: [0, 2, 4, 5, 7, 8, 11], chord: "M7", gridX: 1050, gridY: 200, lineLevel: 3 },
             { id: "m4_4", name: "Lydian ♭3", parent: "Harmonic Major", degrees: "Ⅰ Ⅱ ♭Ⅲ ♯Ⅳ Ⅴ Ⅵ Ⅶ", semitones: [0, 2, 3, 6, 7, 9, 11], chord: "m(M7)", gridX: 1050, gridY: 320, lineLevel: 3 },
             { id: "m4_5", name: "Mixolydian ♭2", parent: "Harmonic Major", degrees: "Ⅰ ♭Ⅱ Ⅲ Ⅳ Ⅴ Ⅵ ♭Ⅶ", semitones: [0, 1, 4, 5, 7, 9, 10], chord: "7", gridX: 1050, gridY: 440, lineLevel: 5 },
             { id: "m4_2", name: "Dorian ♭5", parent: "Harmonic Major", degrees: "Ⅰ Ⅱ ♭Ⅲ Ⅳ ♭Ⅴ Ⅵ ♭Ⅶ", semitones: [0, 2, 3, 5, 6, 9, 10], chord: "m7♭5", gridX: 1050, gridY: 560, lineLevel: 8 },
-            { id: "m4_3", name: "Phrygian ♭4", parent: "Harmonic Major", degrees: "Ⅰ ♭Ⅱ ♭Ⅲ ♭Ⅳ Ⅴ ♭Ⅵ ♭Ⅶ", semitones: [0, 1, 3, 4, 7, 8, 10], chord: "m7", gridX: 1050, gridY: 680, lineLevel: 7 }, 
+            { id: "m4_3", name: "Phrygian ♭4", parent: "Harmonic Major", degrees: "Ⅰ ♭Ⅱ ♭Ⅲ ♭Ⅳ Ⅴ ♭Ⅵ ♭Ⅶ", semitones: [0, 1, 3, 4, 7, 8, 10], chord: "m7", gridX: 1050, gridY: 680, lineLevel: 7 },
             { id: "m4_7", name: "Locrian 𝄫7", parent: "Harmonic Major", degrees: "Ⅰ ♭Ⅱ ♭Ⅲ Ⅳ ♭Ⅴ ♭Ⅵ 𝄫Ⅶ", semitones: [0, 1, 3, 5, 6, 8, 9], chord: "dim7", gridX: 1050, gridY: 840, lineLevel: 10 }
         ];
 
-        let currentLayout = 'grid';
+        let currentLayoutMode = 'grid';
         const wrapper = document.getElementById("mapWrapper");
         const shield = document.getElementById("mapShield");
 
+        // 📱 既存の高性能レスポンシブ縮小ロジック
         function handleResponsiveScale() {
             const container = document.querySelector('.map-container');
             const windowWidth = container.clientWidth;
-            
             if (windowWidth < 1400) {
                 const scale = windowWidth / 1400;
                 wrapper.style.transform = `scale(${scale})`;
@@ -432,38 +421,16 @@
             return colors[chord] || "#ffffff";
         }
 
-        function getDistance(scaleA, scaleB) {
-            let diffCount = 0;
-            for(let i=0; i<7; i++) { if (scaleA[i] !== scaleB[i]) diffCount++; }
-            return diffCount;
+        // モード間のインターバル差異（不一致度＝距離）を計算するコア関数
+        function calcNoteDistance(arrayA, arrayB) {
+            let difference = 0;
+            for(let i=0; i<7; i++) {
+                if (arrayA[i] !== arrayB[i]) difference++;
+            }
+            return difference;
         }
 
-        const parentOrder = { "Major": 1, "Melodic Minor": 2, "Harmonic Minor": 3, "Harmonic Major": 4 };
-
-        function getLineCoordinates(mode) {
-            const sameLevelModes = modesData.filter(m => m.lineLevel === mode.lineLevel)
-                                            .sort((a, b) => {
-                                                if (parentOrder[a.parent] !== parentOrder[b.parent]) {
-                                                    return parentOrder[a.parent] - parentOrder[b.parent];
-                                                }
-                                                return a.id.localeCompare(b.id);
-                                            });
-            
-            const idxInLevel = sameLevelModes.findIndex(m => m.id === mode.id);
-            const totalInLevel = sameLevelModes.length;
-
-            const y = 80 + (mode.lineLevel * 105);
-
-            const cardWidthWithGap = 250;
-            const startX = 700 - ((totalInLevel - 1) * cardWidthWithGap / 2) - 105;
-            let x = startX + (idxInLevel * cardWidthWithGap);
-
-            if (mode.id === "m4_7") { x += 110; }
-            if (mode.id === "m3_7") { x -= 90; }
-
-            return { x, y };
-        }
-
+        // 初期構築＆ドラッグドロップ機構の完全展開
         modesData.forEach(mode => {
             const card = document.createElement("div");
             card.className = "mode-card";
@@ -471,151 +438,130 @@
             card.style.left = `${mode.gridX}px`;
             card.style.top = `${mode.gridY}px`;
             card.style.borderColor = getColorCode(mode.chord);
-            
-            card.innerHTML = `
-                <div class="mode-name">${mode.name}</div>
-                <div class="mode-degrees">${mode.degrees}</div>
-                <div class="mode-parent">${mode.parent}</div>
-            `;
+            card.innerHTML = `<div class="mode-name">${mode.name}</div><div class="mode-degrees">${mode.degrees}</div><div class="mode-parent">${mode.parent}</div>`;
             wrapper.appendChild(card);
 
             let isDragging = false;
-            let startX, startY, initialLeft, initialTop;
+            let startX, startY, initLeft, initTop;
 
-            const startDrag = (e) => {
+            const dragStart = (e) => {
                 const pageX = e.pageX || e.touches[0].pageX;
                 const pageY = e.pageY || e.touches[0].pageY;
-                
                 isDragging = true;
-                card.style.transition = 'none'; 
-                card.style.zIndex = 1000;      
-
+                card.style.transition = 'none';
+                card.style.zIndex = 1000;
                 startX = pageX;
                 startY = pageY;
-                initialLeft = card.offsetLeft;
-                initialTop = card.offsetTop;
+                initLeft = card.offsetLeft;
+                initTop = card.offsetTop;
 
                 document.addEventListener('mousemove', dragMove);
-                document.addEventListener('mouseup', endDrag);
+                document.addEventListener('mouseup', dragEnd);
                 document.addEventListener('touchmove', dragMove, { passive: false });
-                document.addEventListener('touchend', endDrag);
+                document.addEventListener('touchend', dragEnd);
             };
 
             const dragMove = (e) => {
                 if (!isDragging) return;
-                if (e.cancelable) e.preventDefault(); 
-
+                if (e.cancelable) e.preventDefault();
                 const pageX = e.pageX || e.touches[0].pageX;
                 const pageY = e.pageY || e.touches[0].pageY;
 
                 const container = document.querySelector('.map-container');
                 const scale = container.clientWidth < 1400 ? container.clientWidth / 1400 : 1;
 
-                const deltaX = (pageX - startX) / scale;
-                const deltaY = (pageY - startY) / scale;
-
-                card.style.left = `${initialLeft + deltaX}px`;
-                card.style.top = `${initialTop + deltaY}px`;
-
-                drawEdges();
+                card.style.left = `${initLeft + (pageX - startX) / scale}px`;
+                card.style.top = `${initTop + (pageY - startY) / scale}px`;
+                drawEdges(); // 移動中に線をリアルタイム再描画
             };
 
-            const endDrag = () => {
+            const dragEnd = () => {
                 if (!isDragging) return;
                 isDragging = false;
                 card.style.zIndex = 2;
-                card.style.transition = 'left 0.6s cubic-bezier(0.16, 1, 0.3, 1), top 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s';
+                card.style.transition = 'left 0.65s cubic-bezier(0.16, 1, 0.3, 1), top 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s';
                 
                 document.removeEventListener('mousemove', dragMove);
-                document.removeEventListener('mouseup', endDrag);
+                document.removeEventListener('mouseup', dragEnd);
                 document.removeEventListener('touchmove', dragMove);
-                document.removeEventListener('touchend', endDrag);
+                document.removeEventListener('touchend', dragEnd);
             };
 
-            card.addEventListener('mousedown', startDrag);
-            card.addEventListener('touchstart', startDrag, { passive: true });
+            card.addEventListener('mousedown', dragStart);
+            card.addEventListener('touchstart', dragStart, { passive: true });
         });
 
+        // 🛠️ 新機能：距離の近さに応じて太さと明るさを動的に変化させるエッジ描画
         function drawEdges() {
             const svg = document.getElementById("edge-svg");
             svg.innerHTML = "";
-            
+
             for (let i = 0; i < modesData.length; i++) {
                 for (let j = i + 1; j < modesData.length; j++) {
                     const modeA = modesData[i];
                     const modeB = modesData[j];
+                    const distance = calcNoteDistance(modeA.semitones, modeB.semitones);
 
-                    if (getDistance(modeA.semitones, modeB.semitones) === 1) {
-                        const elA = document.getElementById(modeA.id);
-                        const elB = document.getElementById(modeB.id);
-                        
-                        const x1 = elA.offsetLeft + 105;
-                        const y1 = elA.offsetTop + (elA.offsetHeight / 2 || 27);
-                        const x2 = elB.offsetLeft + 105;
-                        const y2 = elB.offsetTop + (elB.offsetHeight / 2 || 27);
+                    // 1つまたは2つの音だけが変化している関係性をリンク（近接ネットワーク）
+                    if (distance <= 2) {
+                        const cardA = document.getElementById(modeA.id);
+                        const cardB = document.getElementById(modeB.id);
 
-                        const colorA = getColorCode(modeA.chord);
-                        const colorB = getColorCode(modeB.chord);
+                        const x1 = cardA.offsetLeft + 105;
+                        const y1 = cardA.offsetTop + 27;
+                        const x2 = cardB.offsetLeft + 105;
+                        const y2 = cardB.offsetTop + 27;
 
-                        if (modeA.chord === modeB.chord) {
-                            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                            line.setAttribute("x1", x1); line.setAttribute("y1", y1);
-                            line.setAttribute("x2", x2); line.setAttribute("y2", y2);
-                            line.setAttribute("stroke", colorA);
-                            line.setAttribute("stroke-width", "2");
-                            line.setAttribute("opacity", "0.4"); 
-                            svg.appendChild(line);
-                        } else {
-                            const line1 = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                            line1.setAttribute("x1", x1); line1.setAttribute("y1", y1);
-                            line1.setAttribute("x2", x2); line1.setAttribute("y2", y2);
-                            line1.setAttribute("stroke", colorA);
-                            line1.setAttribute("stroke-width", "2.5");
-                            line1.setAttribute("stroke-dasharray", "6,6");
-                            line1.setAttribute("opacity", "0.7");
-                            svg.appendChild(line1);
+                        // 距離が非常に近い(1)ほど太く眩しく輝き、遠い(2)ほど細く控えめになる
+                        const strokeWidth = (distance === 1) ? "3.2" : "1.2";
+                        const opacity = (distance === 1) ? "0.9" : "0.28";
 
-                            const line2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                            line2.setAttribute("x1", x1); line2.setAttribute("y1", y1);
-                            line2.setAttribute("x2", x2); line2.setAttribute("y2", y2);
-                            line2.setAttribute("stroke", colorB);
-                            line2.setAttribute("stroke-width", "2.5");
-                            line2.setAttribute("stroke-dasharray", "6,6");
-                            line2.setAttribute("stroke-dashoffset", "6");
-                            line2.setAttribute("opacity", "0.7");
-                            svg.appendChild(line2);
+                        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                        line.setAttribute("x1", x1); line.setAttribute("y1", y1);
+                        line.setAttribute("x2", x2); line.setAttribute("y2", y2);
+                        line.setAttribute("stroke", getColorCode(modeA.chord));
+                        line.setAttribute("stroke-width", strokeWidth);
+                        line.setAttribute("opacity", opacity);
+
+                        // コードファミリーが異なる場合は破線にして視覚的に構造分離
+                        if (modeA.chord !== modeB.chord) {
+                            line.setAttribute("stroke-dasharray", "4,4");
                         }
+
+                        svg.appendChild(line);
                     }
                 }
             }
         }
 
-        function changeLayout(type) {
-            currentLayout = type;
+        const systemWeights = { "Major": 1, "Melodic Minor": 2, "Harmonic Minor": 3, "Harmonic Major": 4 };
+        function getLineCoordinates(mode) {
+            const levelGroup = modesData.filter(m => m.lineLevel === mode.lineLevel).sort((a, b) => systemWeights[a.parent] - systemWeights[b.parent]);
+            const idx = levelGroup.findIndex(m => m.id === mode.id);
+            const count = levelGroup.length;
+            const y = 90 + (mode.lineLevel * 105);
+            const x = 700 - ((count - 1) * 250 / 2) - 105 + (idx * 250);
+            return { x, y };
+        }
 
+        function changeLayout(type) {
+            currentLayoutMode = type;
             document.getElementById("btn-grid").classList.toggle("active", type === 'grid');
             document.getElementById("btn-line").classList.toggle("active", type === 'line');
-            
             document.getElementById("headers").style.opacity = (type === 'grid') ? "1" : "0";
 
             modesData.forEach(mode => {
                 const card = document.getElementById(mode.id);
-                if (type === 'grid') {
-                    card.style.left = `${mode.gridX}px`;
-                    card.style.top = `${mode.gridY}px`;
-                } else {
-                    const coords = getLineCoordinates(mode);
-                    card.style.left = `${coords.x}px`;
-                    card.style.top = `${coords.y}px`;
-                }
+                const targetCoords = (type === 'grid') ? { x: mode.gridX, y: mode.gridY } : getLineCoordinates(mode);
+                card.style.left = `${targetCoords.x}px`;
+                card.style.top = `${targetCoords.y}px`;
             });
 
             let startTime = null;
             function animateLines(timestamp) {
                 if (!startTime) startTime = timestamp;
-                const progress = timestamp - startTime;
                 drawEdges();
-                if (progress < 650) {
+                if (timestamp - startTime < 650) {
                     requestAnimationFrame(animateLines);
                 } else {
                     drawEdges(); 
@@ -637,20 +583,16 @@
             drawEdges();
         });
 
-        /* 🎬 フェードイン・アウト用のスクリプト */
+        /* 🎬 既存機能：フェードイン・アウト用のスクリプト */
         window.addEventListener('DOMContentLoaded', () => {
             const overlay = document.getElementById('fadeOverlay');
-            setTimeout(() => {
-                overlay.style.opacity = '0';
-            }, 50);
+            setTimeout(() => { overlay.style.opacity = '0'; }, 50);
         });
 
         function navigateWithFade(url) {
             const overlay = document.getElementById('fadeOverlay');
             overlay.style.opacity = '1';
-            setTimeout(() => {
-                window.location.href = url;
-            }, 400);
+            setTimeout(() => { window.location.href = url; }, 400);
         }
     </script>
 </body>
